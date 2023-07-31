@@ -218,26 +218,6 @@ import { Refresh } from "@mui/icons-material";
         <Grid id item xs={12} sm={6} md={12} lg={6} xl={5.25} >
             <Box sx={{border: 1, borderColor: "#004A92 !important", margin: "8px !important", borderRadius: 1}}>
             <InputLabel style={{marginLeft: "8px"}}><h4>Customer Bank Details</h4></InputLabel> 
-            <Box sx={{justifyContent: "left", marginLeft: "8px", display: "flex"}}>   
-            <FormControl>
-              <RadioGroup  row>
-              <FormControlLabel  sx={{
-                  color: "#004A92 !important",
-                  fontWeight: 400,
-                  fontSize: "14px !important",
-                  fontFamily: "Roboto",
-                  }} 
-                disableTypography={true} value="Existing User"   control={<Radio />} label="Existing User" />
-                <FormControlLabel  sx={{
-                  color: "#004A92 !important",
-                  fontWeight: 400,
-                  fontSize: "14px !important",
-                  fontFamily: "Roboto",
-                  }}
-               disableTypography={true} value="New User" control={<Radio />} label="New User" />
-              </RadioGroup>
-            </FormControl>
-          </Box>
             <Grid container rowSpacing={0} columnSpacing={2}>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                     <Box sx={{marginLeft: "8px", width: "100%"}}>
