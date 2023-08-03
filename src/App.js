@@ -11,9 +11,9 @@ function App() {
     <div className="App">
       <Provider store={store}>
      <Routes>
-          <Route path ="/login" element={<Idlogin/>}/>
-          <Route path ="/enach" element={<EnachRegistration/>}/>
-          <Route path ="/otp" element={<OTPSection/>}/>
+          {/* <Route path ="/login" element={<Idlogin/>}/> */}
+          <Route path ="/enach/:appnum" element={<EnachRegistration/>}/>
+          {/* <Route path ="/otp" element={<OTPSection/>}/> */}
       </Routes>
       </Provider>
     </div>

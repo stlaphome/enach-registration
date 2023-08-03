@@ -19,6 +19,7 @@ import {
   import CustomDropDown from "../CustomComponents/CustomDropDown";
   import CustomTextField from "../CustomComponents/CustomTextField";
 import { Refresh } from "@mui/icons-material";
+import { useParams } from "react-router-dom";
   
   const commonStyles = {
     bgcolor: 'white',
@@ -29,11 +30,13 @@ import { Refresh } from "@mui/icons-material";
   };
 
   const EnachRegistration = () => {
+    const { appnum } = useParams();
     const [currentDate, setCurrentDate] = useState(
       `${new Date().getDate()}/${
         new Date().getMonth() + 1
       }/${new Date().getFullYear()}`
     );
+    const [customerName,setCustomerName] = useState("");
     const [branch, setBranch] = useState("");
     const [emiAmount, setEmiAmout] = useState("");
     const [mobileNumber, setMobileNumber] = useState("");
@@ -46,21 +49,44 @@ import { Refresh } from "@mui/icons-material";
     const [applicantName, setApplicantName] = useState("");
     const [nachAmount, setNachAmount] = useState("");
     const [mandateEndDate, setMandateEndDate] = useState("");
-    const [frequency, setFrequency] = useState("");
-    const [debitType, setDebitType] = useState("");
+    const [frequency, setFrequency] = useState("As and when Required");
+    const [debitType, setDebitType] = useState("Maximum Amount");
     const [bankBranchName, setBankBranchName] = useState("");
     const [applicantNameList, setApplicantNameList] = useState([]);
-
+    const[customerBank,setCustomerBank] = useState("");
+   const[mandateStartDate,setMandateStartDate] = useState("");
+   const[nachBankBranch,setNachBankBranch] = useState("");
+   const[nachIfscCode,setNachIfscCode] = useState("");
+   const[nachBankType,setNachBankType] = useState("");
+   const [nachBank,setNachBank] = useState("");
+   const [customerMailId,setCustomerMailId] = useState("");
+   const [customerMobileNum,setCustomerMobileNum] = useState("");
+   const[mandateAmount,setMandateAmount] = useState("");
     useEffect(() => {
       getApplicationListData();
     }, []);
   
     const getApplicationListData = async () => {
       try {
-        const response = await axios.post("/enach/getApplicants", {
-          applicationNum: window.location.pathname.split("=")[1],
+        const response = await axios.post("/enach/enachDetails", {
+          applicationNum: appnum,
+          applicationName:'ltu'
         });
         setApplicantNameList(response.data);
+        setMailId(response.data.mailId);
+        setMobileNumber(response.data.mobileNum);
+        setCustomerBank(response.data.mobileNum);
+        setCustomerMailId(response.data.mailId);
+        setNachIfscCode(response.data.custIfscCode);
+        setNachBank(response.data.custBankBranch);
+        setMandateAmount(response.data.mandateAmount);
+        setMandateEndDate(response.data.mantadteEndDate);
+        setMandateStartDate(response.data.mantadteStartDate);
+        setCustomerMobileNum(response.data.mobileNum);
+        setCustomerName(response.data.userName);
+        setNachAmount(response.data.nachAmount);
+        setNachBank(response.data.custIfscCode);
+        setAccountNumber(response.data.custBankAcctNum)
       } catch {
         console.log("Network Error");
       }
@@ -108,8 +134,8 @@ import { Refresh } from "@mui/icons-material";
         // setAccountNumber(response.data.bankDetails["bankAccountNum"]);
         // setAccountType(response.data.bankDetails["bankAccountType"]);
         // setBankName(response.data.bankDetails["bankName"]);
-        // setDebitType("Maxi Amount");
-        // setFrequency("As and when Required");
+        setDebitType("Maxi Amount");
+        setFrequency("As and when Required");
         // setIfscCode(response.data.bankDetails["ifscCode"]);
         // setMailId(response.data.losData["emailId"]);
         // setMobileNumber(response.data.losData["mobileNumber"]);
@@ -123,8 +149,7 @@ import { Refresh } from "@mui/icons-material";
     const getEnachDetails = async (applicantName) => {
       try {
         const response = await axios.post("/enach/enachDetails", {
-          applicationNum: window.location.pathname.split("=")[1],
-          applicantName: applicantName,
+          applicationNum: appnum
         });
         setBranch(
           response.data.losData["branch"] ? response.data.losData["branch"] : ""
@@ -192,22 +217,22 @@ import { Refresh } from "@mui/icons-material";
             <Grid container rowSpacing={0} columnSpacing={2}>
             <Grid item xs={11.5} sm={5.85} md={4} lg={2.95} xl={3} >
                  <Box sx={{marginLeft: "8px", width: "100%"}}>
-                        <CustomTextField label={"Applicant Name"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                        <CustomTextField label={"Applicant Name"} value={applicantName} disabled= {true}  variant={"standard"}></CustomTextField>
                  </Box>
             </Grid>
             <Grid item xs={11.5} sm={5.85} md={4} lg={2.95} xl={3} >
                  <Box sx={{marginLeft: "8px", width: "100%"}}>
-                        <CustomTextField label={"Branch"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                        <CustomTextField label={"Branch"} value={customerBank} disabled= {true}  variant={"standard"}></CustomTextField>
                  </Box>
             </Grid>
             <Grid item xs={11.5} sm={5.85} md={4} lg={2.95} xl={3} >
                  <Box sx={{marginLeft: "8px", width: "100%"}}>
-                        <CustomTextField label={"Mobile Number"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                        <CustomTextField label={"Mobile Number"} value={customerMobileNum} disabled= {true}  variant={"standard"}></CustomTextField>
                  </Box>
             </Grid>
             <Grid item xs={11.5} sm={5.85} md={4} lg={2.95} xl={3} >
                  <Box sx={{marginLeft: "8px", marginBottom: "8px", width: "100%"}}>
-                        <CustomTextField label={"Mail Id"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                        <CustomTextField label={"Mail Id"} value={customerMailId} disabled= {true}  variant={"standard"}></CustomTextField>
                  </Box>
             </Grid>
 
@@ -221,27 +246,27 @@ import { Refresh } from "@mui/icons-material";
             <Grid container rowSpacing={0} columnSpacing={2}>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                     <Box sx={{marginLeft: "8px", width: "100%"}}>
-                        <CustomTextField label={"Bank Name"} disabled= {true} value={""}  variant={"standard"}></CustomTextField>
+                        <CustomTextField label={"Bank Name"} disabled= {true} value={nachBank}  variant={"standard"}></CustomTextField>
                     </Box>
                 </Grid>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                   <Box sx={{marginLeft: "8px", width: "100%"}}>
-                    <CustomTextField label={"Account Number"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Account Number"} value={accountNumber} disabled= {true}  variant={"standard"}></CustomTextField>
                   </Box>
                 </Grid>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                   <Box sx={{marginLeft: "8px", width: "100%"}}>
-                    <CustomTextField label={"Account Type"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Account Type"} value={nachBankType} disabled= {true}  variant={"standard"}></CustomTextField>
                   </Box>
                 </Grid>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                   <Box sx={{marginLeft: "8px", width: "100%"}}>
-                    <CustomTextField label={"IFSC Code"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"IFSC Code"} value={nachIfscCode} disabled= {true}  variant={"standard"}></CustomTextField>
                   </Box>
                 </Grid>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                   <Box sx={{marginLeft: "8px", marginBottom: "8px", width: "100%"}}>
-                    <CustomTextField label={"Branch"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Branch"} value={nachBankBranch} disabled= {true}  variant={"standard"}></CustomTextField>
                   </Box>
                 </Grid>
             </Grid>
@@ -253,30 +278,30 @@ import { Refresh } from "@mui/icons-material";
             <Grid container rowSpacing={0} columnSpacing={2}>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                     <Box sx={{marginLeft: "8px", width: "100%"}}>
-                        <CustomTextField label={"Mandate Amount (₹)"} disabled= {true} value={""}  variant={"standard"}></CustomTextField>
+                        <CustomTextField label={"Mandate Amount (₹)"} disabled= {true} value={mandateAmount}  variant={"standard"}></CustomTextField>
                     </Box>
                 </Grid>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                   <Box sx={{marginLeft: "8px", width: "100%"}}>
-                    <CustomTextField label={"Nach Amount (₹)"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Nach Amount (₹)"} value={nachAmount} disabled= {true}  variant={"standard"}></CustomTextField>
                   </Box>
                 </Grid>
                 <Grid container rowSpacing={0} columnSpacing={2} sx={{marginLeft: "8px"}}>
                 <Grid item xs={5.87} sm={5.75} md={4} lg={5.9} xl={3}>
-                    <CustomTextField label={"Mandate Start Date"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Mandate Start Date"} value={mandateStartDate} disabled= {true}  variant={"standard"}></CustomTextField>
                 </Grid>
                 <Grid item xs={5.87} sm={5.75} md={4} lg={5.9} xl={3}>
-                    <CustomTextField label={"Mandate End Date"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Mandate End Date"} value={mandateEndDate} disabled= {true}  variant={"standard"}></CustomTextField>
                 </Grid>
                 </Grid>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                   <Box sx={{marginLeft: "8px", width: "100%"}}>
-                    <CustomTextField label={"Frequency"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Frequency"} value={frequency} disabled= {true}  variant={"standard"}></CustomTextField>
                   </Box>
                 </Grid>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                   <Box sx={{marginLeft: "8px", marginBottom: "8px", width: "100%"}}>
-                    <CustomTextField label={"Debit Type"} value={""} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Debit Type"} value={debitType} disabled= {true}  variant={"standard"}></CustomTextField>
                   </Box>
                 </Grid>
             </Grid>
