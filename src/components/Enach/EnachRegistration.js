@@ -20,6 +20,7 @@ import {
   import CustomTextField from "../CustomComponents/CustomTextField";
 import { Refresh } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
+import contactImg from "../images/contact.png"
   
   const commonStyles = {
     bgcolor: 'white',
@@ -62,6 +63,7 @@ import { useParams } from "react-router-dom";
    const [customerMailId,setCustomerMailId] = useState("");
    const [customerMobileNum,setCustomerMobileNum] = useState("");
    const[mandateAmount,setMandateAmount] = useState("");
+   const [contactAdmin,setContactAdmin] = useState(false);
     useEffect(() => {
       getApplicationListData();
     }, []);
@@ -76,7 +78,8 @@ import { useParams } from "react-router-dom";
         setMailId(response.data.mailId);
         setMobileNumber(response.data.mobileNum);
         setCustomerBank(response.data.mobileNum);
-        setCustomerMailId(response.data.mailId);
+        setCustomerMailId(response.data.emailId);
+        setApplicantName(response.data.userName);
         setNachIfscCode(response.data.custIfscCode);
         setNachBank(response.data.custBankBranch);
         setMandateAmount(response.data.mandateAmount);
@@ -88,6 +91,7 @@ import { useParams } from "react-router-dom";
         setNachBank(response.data.custIfscCode);
         setAccountNumber(response.data.custBankAcctNum)
       } catch {
+        setContactAdmin(true);
         console.log("Network Error");
       }
     };
@@ -143,6 +147,7 @@ import { useParams } from "react-router-dom";
         // setMandateEndDate("Until Cancelled");
         window.open("https://emandateut.hdfcbank.com/testingapi.aspx");
       } catch {
+        setContactAdmin(true);
         console.log("Network Error");
       }
     };
@@ -201,6 +206,7 @@ import { useParams } from "react-router-dom";
         );
         setMandateEndDate("Until Cancelled");
       } catch {
+        setContactAdmin(true);
         console.log("Network Error");
       }
     };
@@ -208,6 +214,18 @@ import { useParams } from "react-router-dom";
       setPayMentType(event.target.value);
     };
     return (
+      
+  (contactAdmin ?  
+    <Box sx={{minHeight: "calc(100vh - 110px)", display: "flex", justifyContent:"center"}}>
+         <Box sx={{display: "flex", justifyContent: "center"}}>
+             <img
+             style={{height: "350px", width: "350px", position: "relative", top: "30%"}}
+             src={contactImg}
+             alt="Thumb"
+             />
+         </Box>
+     </Box>
+    :
       <Box>
       <Box sx={{...commonStyles, borderRadius: "16px"}}>
         <Box sx={{backgroundColor: "#004A92 !important", margin: "8px !important", borderRadius: 1, display:"flex", height: "50px", alignItems: "center", justifyContent: "center"}}>
@@ -313,14 +331,14 @@ import { useParams } from "react-router-dom";
               color: "#004A92 !important",
               fontWeight: 400,
               fontSize: "14px !important",
-              fontFamily: "Roboto",
+             
             }}
           >Mode Of payment for Registration</FormLabel>
           <RadioGroup  row >
           <FormControlLabel sx={{fontWeight: 400, fontSize: "14px !important",
-              fontFamily: "Roboto"}} disableTypography={true} value="Net Banking"   control={<Radio />} label="Net Banking" />
+              }} disableTypography={true} value="Net Banking"   control={<Radio />} label="Net Banking" />
           <FormControlLabel sx={{fontWeight: 400, fontSize: "14px !important",
-              fontFamily: "Roboto"}}disableTypography={true} value="Debit Card" control={<Radio />} label="Debit card" />
+              }}disableTypography={true} value="Debit Card" control={<Radio />} label="Debit card" />
           </RadioGroup>
           </FormControl>
         </Box>
@@ -336,6 +354,7 @@ import { useParams } from "react-router-dom";
          > Submit </Button>
         </Box>
       </Box>
+  )
     );
   };
   export default EnachRegistration;

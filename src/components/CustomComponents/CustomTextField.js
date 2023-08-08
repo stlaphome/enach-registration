@@ -15,7 +15,7 @@ const CustomTextField = (props) => {
             mb: 2,
             fontWeight: 400,
             fontSize: "14px",
-            fontFamily: "Roboto",
+            
             overflow: props.overflow ? props.overflow : "hidden",
             visibility: props.visibility ? props.visibility : "visible"
           }}

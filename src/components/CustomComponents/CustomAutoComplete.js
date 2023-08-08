@@ -18,7 +18,7 @@ const CustomAutoComplete = (props) => {
           mb: 2,
           fontWeight: 400,
           fontSize: "14px",
-          fontFamily: "Roboto",
+          
         }}
       >
         {props.label}
@@ -26,7 +26,7 @@ const CustomAutoComplete = (props) => {
       <FormControl fullWidth>
         <Tooltip title={props.tooltip ? props.tooltip : ""}>
           <Autocomplete
-            sx={{ fontFamily: "Roboto" }}
+          
             id={props.id}
             value={props.value}
             disabled={props.disabled}
