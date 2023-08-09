@@ -1,5 +1,7 @@
 import {
+  Backdrop,
     Button,
+    CircularProgress,
     FormControl,
     FormControlLabel,
     FormLabel,
@@ -64,8 +66,10 @@ import contactImg from "../images/contact.png"
    const [customerMobileNum,setCustomerMobileNum] = useState("");
    const[mandateAmount,setMandateAmount] = useState("");
    const [contactAdmin,setContactAdmin] = useState(false);
+   const [open,setOpen] = useState(true);
     useEffect(() => {
       getApplicationListData();
+      setOpen(false)
     }, []);
   
     const getApplicationListData = async () => {
@@ -353,6 +357,13 @@ import contactImg from "../images/contact.png"
           }} 
          > Submit </Button>
         </Box>
+       {open&& <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={true}
+        
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>}
       </Box>
   )
     );
