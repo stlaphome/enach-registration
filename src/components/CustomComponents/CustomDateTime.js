@@ -13,7 +13,7 @@ const CustomDateTime = (props) => {
           mb: 2,
           fontWeight: 400,
           fontSize: "14px",
-          fontFamily: "Roboto",
+        
         }}
       >
         {props.label}

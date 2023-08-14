@@ -84,9 +84,25 @@ const EnachRegistration = () => {
   }, []);
   const encryptText = (text) => {
     let secretKey = "k2hLr4X0ozNyZByj5DT66edtCEee1x+6";
-    const encrypted = CryptoJS.AES.encrypt(text, secretKey);
+    // const encrypted = CryptoJS.AES.encrypt(JSON.stringify(text), secretKey);
+    /*  const CryptoJS = require("crypto-js");
+    const value = CryptoJS.enc.Hex.parse(text);
+    const key = CryptoJS.enc.Hex.parse(secretKey);
+    const ivvar = CryptoJS.enc.Hex.parse("00000000000000000000000000000000");
+    const encryptedStringHex = CryptoJS.AES.encrypt(value, key, {
+      mode: CryptoJS.mode.ECB,
+    });
+
+    console.log(encryptedStringHex);
+    console.log(encryptedStringHex.ciphertext.toString()); */
+    var hash = CryptoJS.SHA256(text);
+    const key = CryptoJS.enc.Hex.parse(secretKey);
+    var encrypted = CryptoJS.AES.encrypt(hash, key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7,
+    });
+    console.log(encrypted.toString());
     let output = "\\x" + encrypted;
-    console.log(output);
     return output.toString();
   };
   const requestMap = {
@@ -124,8 +140,16 @@ const EnachRegistration = () => {
   const [requstData, setRequestData] = useState(requestMap);
   useEffect(() => {
     getApplicationListData();
+    getEncryptedData();
   }, []);
-
+  const getEncryptedData = async () => {
+    try {
+      const response = await axios.post("/enach/getEncryptedData", requstData);
+      console.log(response);
+    } catch {
+      console.log("Network Error");
+    }
+  };
   const getApplicationListData = async () => {
     try {
       const response = await axios.post("/enach/getApplicants", {

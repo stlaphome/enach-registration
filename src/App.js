@@ -14,7 +14,7 @@ function App() {
       <Provider store={store}>
         <Routes>
           <Route path="/login" element={<Idlogin />} />
-          <Route path="/enach" element={<EnachRegistration />} />
+          <Route path="/enach/" element={<EnachRegistration />} />
           <Route path="/enachForm" element={<EnachNewForm />} />
           <Route path="/otp" element={<OTPSection />} />
         </Routes>

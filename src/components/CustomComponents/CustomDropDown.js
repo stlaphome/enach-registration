@@ -13,7 +13,7 @@ const CustomDropDown = (props) => {
           mb: 2,
           fontWeight: 400,
           fontSize: "14px",
-          fontFamily: "Roboto",
+         
         }}
       >
         {props.label}
@@ -24,7 +24,7 @@ const CustomDropDown = (props) => {
       <FormControl fullWidth variant={props.variant}>
         <Select
           sx={{
-            fontFamily: "Roboto",
+            
             boxShadow: "none",
             ".MuiOutlinedInput-notchedOutline": { border: 0 },
           }}
