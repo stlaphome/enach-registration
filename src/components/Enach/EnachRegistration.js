@@ -149,7 +149,27 @@ import contactImg from "../images/contact.png"
         // setMobileNumber(response.data.losData["mobileNumber"]);
         // setNachAmount(response.data.losData["nachAmount"]);
         // setMandateEndDate("Until Cancelled");
-        window.open("https://emandateut.hdfcbank.com/testingapi.aspx");
+        // window.open("https://emandateut.hdfcbank.com/testingapi.aspx");
+        const saveMap = {};
+        saveMap['mailId']=mailId;
+        saveMap['applicationId']=appnum;
+        saveMap['mobileNum']=customerMobileNum;
+        saveMap['emailId']=customerMailId;
+        saveMap['userName']=applicantName;
+        saveMap['custIfscCode']=nachIfscCode;
+        saveMap['custBankBranch']=custBankBranch;
+        saveMap['mandateAmount']=mandateAmount;
+        saveMap['mantadteEndDate']=mantadteEndDate;
+        saveMap['mantadteStartDate']=mantadteStartDate;
+        saveMap['nachAmount']=nachAmount;
+        saveMap['custBankAcctNum']=custBankAcctNum;
+        try {
+          const response = await axios.post("/enach/saveDetails", saveMap);
+         
+        } catch {
+          setContactAdmin(true);
+          console.log("Network Error");
+        }
       } catch {
         setContactAdmin(true);
         console.log("Network Error");
@@ -355,6 +375,7 @@ import contactImg from "../images/contact.png"
                   height: "2rem",
                   fontWeight: "bold"
           }} 
+          onClick={saveDetails}
          > Submit </Button>
         </Box>
        {open&& <Backdrop
