@@ -52,8 +52,8 @@ import contactImg from "../images/contact.png"
     const [applicantName, setApplicantName] = useState("");
     const [nachAmount, setNachAmount] = useState("");
     const [mandateEndDate, setMandateEndDate] = useState("");
-    const [frequency, setFrequency] = useState("As and when Required");
-    const [debitType, setDebitType] = useState("Maximum Amount");
+    const [frequency, setFrequency] = useState("");
+    const [debitType, setDebitType] = useState("");
     const [bankBranchName, setBankBranchName] = useState("");
     const [applicantNameList, setApplicantNameList] = useState([]);
     const[customerBank,setCustomerBank] = useState("");
@@ -67,11 +67,14 @@ import contactImg from "../images/contact.png"
    const[mandateAmount,setMandateAmount] = useState("");
    const [contactAdmin,setContactAdmin] = useState(false);
    const [open,setOpen] = useState(true);
+   const[tenure,setTenure] = useState(1);
     useEffect(() => {
       getApplicationListData();
       setOpen(false)
     }, []);
-  
+  const handlePaymentType = (event)=>{
+setPayMentType(event.target.value);
+  }
     const getApplicationListData = async () => {
       try {
         const response = await axios.post("/enach/enachDetails", {
@@ -81,7 +84,7 @@ import contactImg from "../images/contact.png"
         setApplicantNameList(response.data);
         setMailId(response.data.mailId);
         setMobileNumber(response.data.mobileNum);
-        setCustomerBank(response.data.mobileNum);
+        setCustomerBank(response.data.branch);
         setCustomerMailId(response.data.emailId);
         setApplicantName(response.data.userName);
         setNachIfscCode(response.data.custIfscCode);
@@ -93,7 +96,8 @@ import contactImg from "../images/contact.png"
         setCustomerName(response.data.userName);
         setNachAmount(response.data.nachAmount);
         setNachBank(response.data.custIfscCode);
-        setAccountNumber(response.data.custBankAcctNum)
+        setAccountNumber(response.data.custBankAcctNum);
+        setTenure(response.data.tenure);
       } catch {
         setContactAdmin(true);
         console.log("Network Error");
@@ -157,12 +161,13 @@ import contactImg from "../images/contact.png"
         saveMap['emailId']=customerMailId;
         saveMap['userName']=applicantName;
         saveMap['custIfscCode']=nachIfscCode;
-        saveMap['custBankBranch']=custBankBranch;
+        saveMap['custBankBranch']=nachBank;
         saveMap['mandateAmount']=mandateAmount;
-        saveMap['mantadteEndDate']=mantadteEndDate;
-        saveMap['mantadteStartDate']=mantadteStartDate;
+        saveMap['mandateEndDate']=new Date(new Date(mandateStartDate).setFullYear(new Date(mandateStartDate).getFullYear()+tenure)).toString();
+        saveMap['mandateStartDate']=new Date(mandateStartDate).toString();
         saveMap['nachAmount']=nachAmount;
-        saveMap['custBankAcctNum']=custBankAcctNum;
+        saveMap['custBankAcctNum']=accountNumber;
+        saveMap['modeOfPayment'] = paymentType;
         try {
           const response = await axios.post("/enach/saveDetails", saveMap);
          
@@ -208,8 +213,8 @@ import contactImg from "../images/contact.png"
             ? response.data.bankDetails["bankName"]
             : ""
         );
-        setDebitType("Maxi Amount");
-        setFrequency("As and when Required");
+        setDebitType("");
+        setFrequency("");
         setIfscCode(
           response.data.bankDetails["ifscCode"]
             ? response.data.bankDetails["ifscCode"]
@@ -330,10 +335,10 @@ import contactImg from "../images/contact.png"
                 </Grid>
                 <Grid container rowSpacing={0} columnSpacing={2} sx={{marginLeft: "8px"}}>
                 <Grid item xs={5.87} sm={5.75} md={4} lg={5.9} xl={3}>
-                    <CustomTextField label={"Mandate Start Date"} value={mandateStartDate} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Mandate Start Date"} value={new Date(mandateStartDate).toLocaleDateString("fr-FR")} disabled= {true}  variant={"standard"}></CustomTextField>
                 </Grid>
                 <Grid item xs={5.87} sm={5.75} md={4} lg={5.9} xl={3}>
-                    <CustomTextField label={"Mandate End Date"} value={mandateEndDate} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Mandate End Date"} value={new Date(new Date(mandateStartDate).setFullYear(new Date(mandateStartDate).getFullYear()+tenure)).toLocaleDateString("fr-FR")} disabled= {true}  variant={"standard"}></CustomTextField>
                 </Grid>
                 </Grid>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
@@ -358,11 +363,11 @@ import contactImg from "../images/contact.png"
              
             }}
           >Mode Of payment for Registration</FormLabel>
-          <RadioGroup  row >
+          <RadioGroup  row onChange={handlePaymentType} value={paymentType}>
           <FormControlLabel sx={{fontWeight: 400, fontSize: "14px !important",
-              }} disableTypography={true} value="Net Banking"   control={<Radio />} label="Net Banking" />
+              }} disableTypography={true} value="netbank" selected  control={<Radio />} label="Net Banking" />
           <FormControlLabel sx={{fontWeight: 400, fontSize: "14px !important",
-              }}disableTypography={true} value="Debit Card" control={<Radio />} label="Debit card" />
+              }}disableTypography={true} value="debitcard" control={<Radio />} label="Debit card" />
           </RadioGroup>
           </FormControl>
         </Box>
