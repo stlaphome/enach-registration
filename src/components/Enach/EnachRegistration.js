@@ -16,6 +16,8 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import axios from "axios";
+import CryptoJS from "crypto-js";
+
 import { React, useEffect, useState } from "react";
 import AccordianContainer from "../CustomComponents/AccordianContainer";
 import CustomDropDown from "../CustomComponents/CustomDropDown";
@@ -23,6 +25,7 @@ import CustomTextField from "../CustomComponents/CustomTextField";
 import { Refresh } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
 import contactImg from "../images/contact.png";
+import EnachConvertForm from "./EnachConvertForm";
 
 const commonStyles = {
   bgcolor: "white",
@@ -34,9 +37,9 @@ const commonStyles = {
 const EnachRegistration = () => {
   const { appnum } = useParams();
   const [currentDate, setCurrentDate] = useState(
-    `${new Date().getDate()}/${
+    `${new Date().getDate()}-${
       new Date().getMonth() + 1
-    }/${new Date().getFullYear()}`
+    }-${new Date().getFullYear()}`
   );
   const [customerName, setCustomerName] = useState("");
   const [branch, setBranch] = useState("");
@@ -66,7 +69,7 @@ const EnachRegistration = () => {
   const [mandateAmount, setMandateAmount] = useState("");
   const [contactAdmin, setContactAdmin] = useState(false);
   const [open, setOpen] = useState(true);
-
+  const [hiddenForm, setHiddenForm] = useState(false);  
   const [channel, setChannel] = useState("");
   const customerAccountNumber = "00020350000114";
   const maxAmount = "5000.00";
@@ -95,12 +98,33 @@ const EnachRegistration = () => {
     let value = "L1" + ans;
     setMsgId(value);
   }, []);
+  const encryptText = (text) => {
+    let secretKey = "k2hLr4X0ozNyZByj5DT66edtCEee1x+6";
+    // const encrypted = CryptoJS.AES.encrypt(JSON.stringify(text), secretKey);
+    /*  const CryptoJS = require("crypto-js");
+    const value = CryptoJS.enc.Hex.parse(text);
+    const key = CryptoJS.enc.Hex.parse(secretKey);
+    const ivvar = CryptoJS.enc.Hex.parse("00000000000000000000000000000000");
+    const encryptedStringHex = CryptoJS.AES.encrypt(value, key, {
+      mode: CryptoJS.mode.ECB,
+    });
+
+    console.log(encryptedStringHex);
+    console.log(encryptedStringHex.ciphertext.toString()); */
+    var hash = CryptoJS.SHA256(text);
+    const key = CryptoJS.enc.Hex.parse(secretKey);
+    var encrypted = CryptoJS.AES.encrypt(hash, key, {
+      mode: CryptoJS.mode.ECB,
+      padding: CryptoJS.pad.Pkcs7,
+    });
+    console.log(encrypted.toString());
+    let output = "\\x" + encrypted;
+    return output.toString();
+  };
   const requestMap = {
     utilCode: "NACH00000000000382",
-    utilCodeEncrypted:
-      "\x179ea78edac3d16dbad4e77ea34277bc229f22e6765184bdcd0f529d17f748de",
-    //encryptText("NACH00000000000382"),
-
+    utilCodeEncrypted: encryptText("NACH00000000000382"),
+    //  "\x179ea78edac3d16dbad4e77ea34277bc229f22e6765184bdcd0f529d17f748de",
     shortCode: "SUNHFL",
     shortCodeEncrypted: "\xf65d964c998d3740d5b5f30d80e1d04e",
     checksum: { checksum },
@@ -137,11 +161,23 @@ const EnachRegistration = () => {
   }, []);
   const getEncryptedData = async () => {
     try {
+      let CryptoJS = require("crypto-js");
+      let key = CryptoJS.enc.Hex.parse('k2hLr4X0ozNyZByj5DT66edtCEee1x+6');
+      let encrypted = CryptoJS.AES.encrypt("NACH00000000000382",key , { mode: CryptoJS.mode.ECB });
+      let op = CryptoJS.enc.Hex.stringify(encrypted);
+      console.log(op);
       const response = await axios.post("/enach/getEncryptedData", requstData);
       console.log(response);
     } catch {
       console.log("Network Error");
     }
+  };
+  const enalbeFormAction = () => {
+    localStorage.setItem("msgIdValue", parseInt(msgIdValue));
+    let request = { ...requestMap, msgId: "L1000189" };
+    console.log(request);
+    setRequestData(request);
+    setHiddenForm(true);
   };
   const getApplicationListData = async () => {
     try {
@@ -578,13 +614,14 @@ const EnachRegistration = () => {
       </Box>
       <Box sx={{ justifyContent: "center", display: "flex", margin: "8px" }}>
         <Button
-          variant="contained"
+          variant="contained" onClick={enalbeFormAction}
           sx={{
             marginLeft: "8px",
             height: "2rem",
             fontWeight: "bold",
           }}
         >
+            
           {" "}
           Submit{" "}
         </Button>
@@ -597,6 +634,7 @@ const EnachRegistration = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       )}
+       {hiddenForm && <EnachConvertForm enable={hiddenForm} data={requstData} />}
     </Box>
   );
 };
