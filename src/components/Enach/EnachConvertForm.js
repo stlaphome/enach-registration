@@ -5,9 +5,7 @@ const EnachConvertForm = (props) => {
   const data = props.data;
   const submitRef = useRef();
   useEffect(() => {
-    if (props.enable) {
       submitRef.current.click();
-    }
   }, []);
 
   return (
@@ -16,6 +14,7 @@ const EnachConvertForm = (props) => {
       name="PostForm"
       action="https://emandateut.hdfcbank.com/Emandate.aspx"
       method="POST"
+      
     >
       <input
         id="UtilCode"
@@ -144,7 +143,7 @@ const EnachConvertForm = (props) => {
       <input id="Filler8" name="Filler8" type="hidden" value="" />
       <input id="Filler9" name="Filler9" type="hidden" value="" />
       <input id="Filler10" name="Filler10" type="hidden" value="" />
-      <input type="submit" ref={submitRef} />
+      <input type="submit" ref={submitRef} sx={{visibility:"hidden",}}/>
     </form>
   );
 };

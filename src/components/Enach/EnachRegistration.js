@@ -98,86 +98,40 @@ const EnachRegistration = () => {
     let value = "L1" + ans;
     setMsgId(value);
   }, []);
-  const encryptText = (text) => {
-    let secretKey = "k2hLr4X0ozNyZByj5DT66edtCEee1x+6";
-    // const encrypted = CryptoJS.AES.encrypt(JSON.stringify(text), secretKey);
-    /*  const CryptoJS = require("crypto-js");
-    const value = CryptoJS.enc.Hex.parse(text);
-    const key = CryptoJS.enc.Hex.parse(secretKey);
-    const ivvar = CryptoJS.enc.Hex.parse("00000000000000000000000000000000");
-    const encryptedStringHex = CryptoJS.AES.encrypt(value, key, {
-      mode: CryptoJS.mode.ECB,
-    });
-
-    console.log(encryptedStringHex);
-    console.log(encryptedStringHex.ciphertext.toString()); */
-    var hash = CryptoJS.SHA256(text);
-    const key = CryptoJS.enc.Hex.parse(secretKey);
-    var encrypted = CryptoJS.AES.encrypt(hash, key, {
-      mode: CryptoJS.mode.ECB,
-      padding: CryptoJS.pad.Pkcs7,
-    });
-    console.log(encrypted.toString());
-    let output = "\\x" + encrypted;
-    return output.toString();
-  };
+ 
   const requestMap = {
     utilCode: "NACH00000000000382",
-    utilCodeEncrypted: encryptText("NACH00000000000382"),
-    //  "\x179ea78edac3d16dbad4e77ea34277bc229f22e6765184bdcd0f529d17f748de",
     shortCode: "SUNHFL",
-    shortCodeEncrypted: "\xf65d964c998d3740d5b5f30d80e1d04e",
     checksum: { checksum },
-    checksumeEncrypted:
-      "19fd6140b5f043d346406a3c297f7e04d27a83bced6890b2061cf55c81fc82aa",
-    merchantCategoryCode: "L001",
-    msgId: msgId,
     customerAccountNumber: customerAccountNumber,
-    customerAccountNumberEncrypted: "\x4b72beb9bc6be48bd24b6d4f068bbc73",
     customerAccountName: "mandate checking",
-    customerAccountNameEncrypted:
-      "\xcefe13b748d71c51b177c673d725fa6688f78213697ba2d4407403b3d2481889",
     customerMobileNumber: "8754549314",
-    customerMobileNumberEncrypted: "\x5b47db3c73fe1554087f5194a54c4a39",
     customerMailId: "sathyac@sundarambnpphome.in",
-    customerMaildIdEncrypted:
-      "\x1da5b361bf67bf9f766a5b57d7acc5fcb5730951816f3c3ca565ba1d17952ad2",
-    customerTelephoneNumber: "",
-    customerStartDate: currentDate,
-    customerExpiryDate: expiryDate,
-    customerDebitAmount: debitAmount,
-    customerMaximumAmount: maxAmount,
-    customerDebitFrequency: "MNTH",
-    customerSeqenceType: "RCUR",
-    customerInstructedMemberId: "HDFC0000017",
-    channel: channel,
-    filler5: "S",
+    
   };
   const [requstData, setRequestData] = useState(requestMap);
   useEffect(() => {
-    getApplicationListData();
-    getEncryptedData();
+   getApplicationListData();
     setOpen(false);
   }, []);
-  const getEncryptedData = async () => {
-    try {
-      let CryptoJS = require("crypto-js");
-      let key = CryptoJS.enc.Hex.parse('k2hLr4X0ozNyZByj5DT66edtCEee1x+6');
-      let encrypted = CryptoJS.AES.encrypt("NACH00000000000382",key , { mode: CryptoJS.mode.ECB });
-      let op = CryptoJS.enc.Hex.stringify(encrypted);
-      console.log(op);
-      const response = await axios.post("/enach/getEncryptedData", requstData);
-      console.log(response);
-    } catch {
-      console.log("Network Error");
-    }
-  };
-  const enalbeFormAction = () => {
-    localStorage.setItem("msgIdValue", parseInt(msgIdValue));
-    let request = { ...requestMap, msgId: "L1000189" };
-    console.log(request);
-    setRequestData(request);
-    setHiddenForm(true);
+ 
+  const enalbeFormAction = async() => {
+    await axios.post("/enach/getEncryptedData", requstData).then((response)=>{
+     localStorage.setItem("msgIdValue", parseInt(msgIdValue));
+     let request = { ...response.data, msgId: "L1000189", merchantCategoryCode: "L001",
+     msgId: msgId,customerTelephoneNumber: "",
+     customerStartDate: currentDate,
+     customerExpiryDate: expiryDate,
+     customerDebitAmount: debitAmount,
+     customerMaximumAmount: maxAmount,
+     customerDebitFrequency: "MNTH",
+     customerSeqenceType: "RCUR",
+     customerInstructedMemberId: "HDFC0000017",
+     channel: channel,
+     filler5: "S" };
+     setRequestData(request);
+     setHiddenForm(true);
+   });
   };
   const getApplicationListData = async () => {
     try {
@@ -262,6 +216,10 @@ const EnachRegistration = () => {
       console.log("Network Error");
     }
   };
+  const getRadioAction = (event, value) => {
+    value == "Net Banking" ? setChannel("Net") : setChannel("Debit");
+  };
+
   const getEnachDetails = async (applicantName) => {
     try {
       const response = await axios.post("/enach/enachDetails", {
@@ -591,7 +549,7 @@ const EnachRegistration = () => {
                 >
                   Mode Of payment for Registration
                 </FormLabel>
-                <RadioGroup row>
+                <RadioGroup row onChange={getRadioAction}>
                   <FormControlLabel
                     sx={{ fontWeight: 400, fontSize: "14px !important" }}
                     disableTypography={true}
