@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 
 const EnachConvertForm = (props) => {
   const data = props.data;
+ 
   const submitRef = useRef();
   useEffect(() => {
       submitRef.current.click();
@@ -21,21 +22,21 @@ const EnachConvertForm = (props) => {
         name="UtilCode"
         type="hidden"
         // value={"NACH00000000000382"}
-        value={data.utilCodeEncrypted}
+        value={data.utilCode}
       />
       <input
         id="Short_Code"
         name="Short_Code"
         type="hidden"
         //value={"SUNHFL"}
-        value={data.shortCodeEncrypted}
+        value={data.shortCode}
       />
       <input
         id="CheckSum"
         name="CheckSum"
         type="hidden"
         //value="50200003144866|2023-08-15|||5000.00"
-        value={data.checksumeEncrypted}
+        value={data.checksum}
       />
       <input
         id="Merchant_Category_Code"
@@ -49,7 +50,7 @@ const EnachConvertForm = (props) => {
         name="Customer_Name"
         type="hidden"
         // value={"mandate checking"}
-        value={data.customerAccountNameEncrypted}
+        value={data.customerAccountName}
       />
       <input
         id="Customer_TelphoneNo"
@@ -62,21 +63,21 @@ const EnachConvertForm = (props) => {
         name="Customer_EmailId"
         type="hidden"
         //value="sathyac@sundarambnpphome.in"
-        value={data.customerMaildIdEncrypted}
+        value={data.customerMaildId}
       />
       <input
         id="Customer_Mobile"
         name="Customer_Mobile"
         //value={"8754549314"}
         type="hidden"
-        value={data.customerMobileNumberEncrypted}
+        value={data.customerMobileNumber}
       />
       <input
         id="Customer_AccountNo"
         name="Customer_AccountNo"
         type="hidden"
         // value={"50200003144866"}
-        value={data.customerAccountNumberEncrypted}
+        value={data.customerAccountNumber}
       />
       <input
         id="Customer_StartDate"
@@ -137,13 +138,13 @@ const EnachConvertForm = (props) => {
       <input id="Filler2" name="Filler2" type="hidden" value="" />
       <input id="Filler3" name="Filler3" type="hidden" value="" />
       <input id="Filler4" name="Filler4" type="hidden" value="" />
-      <input id="Filler5" name="Filler5" type="hidden" value="S" />
+      <input id="Filler5" name="Filler5" type="hidden" value={data.filler5} />
       <input id="Filler6" name="Filler6" type="hidden" value="" />
       <input id="Filler7" name="Filler7" type="hidden" value="" />
       <input id="Filler8" name="Filler8" type="hidden" value="" />
       <input id="Filler9" name="Filler9" type="hidden" value="" />
       <input id="Filler10" name="Filler10" type="hidden" value="" />
-      <input type="submit" ref={submitRef} sx={{visibility:"hidden",}}/>
+      <input type="submit" ref={submitRef} sx={{visibility:"hidden"}}/>
     </form>
   );
 };

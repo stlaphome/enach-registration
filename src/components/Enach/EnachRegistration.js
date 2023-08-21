@@ -36,10 +36,11 @@ const commonStyles = {
 
 const EnachRegistration = () => {
   const { appnum } = useParams();
+  let currentMonth = new Date().getMonth()+1;
   const [currentDate, setCurrentDate] = useState(
-    `${new Date().getDate()}-${
-      new Date().getMonth() + 1
-    }-${new Date().getFullYear()}`
+    `${new Date().getFullYear()}-${currentMonth>9?currentMonth:"0"+currentMonth
+      
+    }-${new Date().getDate()}`
   );
   const [customerName, setCustomerName] = useState("");
   const [branch, setBranch] = useState("");
@@ -71,7 +72,7 @@ const EnachRegistration = () => {
   const [open, setOpen] = useState(true);
   const [hiddenForm, setHiddenForm] = useState(false);  
   const [channel, setChannel] = useState("");
-  const customerAccountNumber = "00020350000114";
+  const customerAccountNumber = "50200003144866";
   const maxAmount = "5000.00";
   const expiryDate = "";
   const debitAmount = "";
@@ -102,7 +103,7 @@ const EnachRegistration = () => {
   const requestMap = {
     utilCode: "NACH00000000000382",
     shortCode: "SUNHFL",
-    checksum: { checksum },
+    checkSum: checksum ,
     customerAccountNumber: customerAccountNumber,
     customerAccountName: "mandate checking",
     customerMobileNumber: "8754549314",
@@ -111,14 +112,24 @@ const EnachRegistration = () => {
   };
   const [requstData, setRequestData] = useState(requestMap);
   useEffect(() => {
-   getApplicationListData();
+  // getApplicationListData();
     setOpen(false);
   }, []);
  
   const enalbeFormAction = async() => {
     await axios.post("/enach/getEncryptedData", requstData).then((response)=>{
+      let data = response.data;
+      let parseData = new Map();
+       for(const key in data){
+          if(data.hasOwnProperty(key)){
+            let as = data[key].replace(/\\\\x/g,'\\x');
+            console.log(as);
+         parseData.set(key,as);
+      }
+      }
+    console.log(parseData);
      localStorage.setItem("msgIdValue", parseInt(msgIdValue));
-     let request = { ...response.data, msgId: "L1000189", merchantCategoryCode: "L001",
+     let request = { ...data, msgId: msgId, merchantCategoryCode: "L001",
      msgId: msgId,customerTelephoneNumber: "",
      customerStartDate: currentDate,
      customerExpiryDate: expiryDate,

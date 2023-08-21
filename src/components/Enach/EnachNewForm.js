@@ -37,6 +37,8 @@ const EnachNewForm = (props) => {
     //const response = await axios.post("/enach/insertRequest", requestMap);
     //console.log(response.data);
   };
+
+  
   return (
     <form
       id="PostForm"
@@ -63,9 +65,9 @@ const EnachNewForm = (props) => {
         type="hidden"
         id="CheckSum"
         name="CheckSum"
-        //value="50200003144866|2023-08-22|||5000.00"
+        //value="50200003144866|2023-08-21|||5000.00"
         
-        value="cf0e756927c70eb4343594f9d09a40f1d8688e57bc71805e946189a185e56a8d"
+        value="ad8ceafffed3d432b370597736e22a4dd6cf8f92f00a8bfa1b7ccb6a8a9ecbb2"
       />
       <input
         type="hidden"
@@ -73,7 +75,7 @@ const EnachNewForm = (props) => {
         name="Merchant_Category_Code"
         value="L001"
       />
-      <input type="hidden" id="MsgId" name="MsgId" value="L1000251" />
+      <input type="hidden" id="MsgId" name="MsgId" value="L1000252" />
       <input
         type="hidden"
         id="Customer_Name"
@@ -112,7 +114,7 @@ const EnachNewForm = (props) => {
         type="hidden"
         id="Customer_StartDate"
         name="Customer_StartDate"
-        value="2023-08-22"
+        value="2023-08-21"
       />
       <input
         type="hidden"
