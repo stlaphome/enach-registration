@@ -119,15 +119,21 @@ const EnachRegistration = () => {
   const enalbeFormAction = async() => {
     await axios.post("/enach/getEncryptedData", requstData).then((response)=>{
       let data = response.data;
-      let parseData = new Map();
+      /* let parseData = new Map();
        for(const key in data){
           if(data.hasOwnProperty(key)){
-            let as = data[key].replace(/\\\\x/g,'\\x');
-            console.log(as);
-         parseData.set(key,as);
+            let value = data[key];
+            if(key==="checkSum"){
+              parseData[key]=value;
+            }else{
+              let b =  ''+val
+             let c =  b.split(`/`)[1];
+               parseData[key]=b;
+            }
+         
       }
-      }
-    console.log(parseData);
+      } */
+    
      localStorage.setItem("msgIdValue", parseInt(msgIdValue));
      let request = { ...data, msgId: msgId, merchantCategoryCode: "L001",
      msgId: msgId,customerTelephoneNumber: "",
