@@ -37,7 +37,7 @@ const EnachNewForm = (props) => {
     //const response = await axios.post("/enach/insertRequest", requestMap);
     //console.log(response.data);
   };
-  
+
   return (
     <form
       id="PostForm"
@@ -73,7 +73,7 @@ const EnachNewForm = (props) => {
         name="Merchant_Category_Code"
         value="L001"
       />
-      <input type="hidden" id="MsgId" name="MsgId" value="L1000255" />
+      <input type="hidden" id="MsgId" name="MsgId" value="L1000258" />
       <input
         type="hidden"
         id="Customer_Name"

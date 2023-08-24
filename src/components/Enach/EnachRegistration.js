@@ -42,14 +42,14 @@ const EnachRegistration = () => {
       currentMonth > 9 ? currentMonth : "0" + currentMonth
     }-${new Date().getDate()}`
   );
-  const [customerName, setCustomerName] = useState("");
+  const [customerName, setCustomerName] = useState("mandate checking");
   const [branch, setBranch] = useState("");
   const [emiAmount, setEmiAmout] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
   const [mailId, setMailId] = useState("");
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("50200003144866");
-  const [accountType, setAccountType] = useState("");
+  const [accountType, setAccountType] = useState("S");
   const [ifscCode, setIfscCode] = useState("");
   const [paymentType, setPayMentType] = useState("netbank");
   const [applicantName, setApplicantName] = useState("");
@@ -62,30 +62,24 @@ const EnachRegistration = () => {
   const [customerBank, setCustomerBank] = useState("");
   const [mandateStartDate, setMandateStartDate] = useState("");
   const [nachBankBranch, setNachBankBranch] = useState("");
-  const [nachIfscCode, setNachIfscCode] = useState("");
-  const [nachBankType, setNachBankType] = useState("");
+  const [nachIfscCode, setNachIfscCode] = useState("HDFC0000017");
+  const [nachBankType, setNachBankType] = useState("Savings");
   const [nachBank, setNachBank] = useState("");
-  const [customerMailId, setCustomerMailId] = useState("");
-  const [customerMobileNum, setCustomerMobileNum] = useState("");
-  const [mandateAmount, setMandateAmount] = useState("");
+  const [customerMailId, setCustomerMailId] = useState(
+    "sathyac@sundarambnpphome.in"
+  );
+  const [customerMobileNum, setCustomerMobileNum] = useState("8754549314");
+  const [mandateAmount, setMandateAmount] = useState("5000.00");
   const [contactAdmin, setContactAdmin] = useState(false);
   const [open, setOpen] = useState(true);
   const [hiddenForm, setHiddenForm] = useState(false);
   const [channel, setChannel] = useState("");
-  const customerAccountNumber = "50200003144866";
+  //const customerAccountNumber = "50200003144866";
   const maxAmount = "5000.00";
-  const expiryDate = "";
+  //const expiryDate = "";
+  const [expiryDate, setExpiryDate] = useState("");
   const debitAmount = "";
-  const checksum =
-    customerAccountNumber +
-    "|" +
-    currentDate +
-    "|" +
-    expiryDate +
-    "|" +
-    debitAmount + //emi amount(nach amount)
-    "|" +
-    maxAmount; //mandate amount(nach amount*2)
+
   const [msgIdValue, setMsgIdValue] = useState(1);
   const [msgId, setMsgId] = useState("");
 
@@ -100,23 +94,33 @@ const EnachRegistration = () => {
     setMsgId(value);
   }, []);
 
-  const requestMap = {
-    utilCode: "NACH00000000000382",
-    shortCode: "SUNHFL",
-    checkSum: checksum,
-    customerAccountNumber: customerAccountNumber,
-    customerAccountName: "mandate checking",
-    customerMobileNumber: "8754549314",
-    customerMailId: "sathyac@sundarambnpphome.in",
-  };
-  const [requstData, setRequestData] = useState(requestMap);
+  const [requstData, setRequestData] = useState({});
   useEffect(() => {
     getApplicationListData();
     setOpen(false);
   }, []);
 
   const enalbeFormAction = async () => {
-    await axios.post("/enach/getEncryptedData", requstData).then((response) => {
+    const checksum =
+      accountNumber +
+      "|" +
+      currentDate +
+      "|" +
+      expiryDate +
+      "|" +
+      nachAmount + //emi amount(nach amount) it should be ""
+      "|" +
+      mandateAmount; //mandate amount(nach amount*2)
+    const requestMap = {
+      utilCode: "NACH00000000000382",
+      shortCode: "SUNHFL",
+      checkSum: checksum,
+      customerAccountNumber: accountNumber,
+      customerAccountName: customerName,
+      customerMobileNumber: customerMobileNum,
+      customerMailId: customerMailId,
+    };
+    await axios.post("/enach/getEncryptedData", requestMap).then((response) => {
       setOpen(true);
       let data = response.data;
       localStorage.setItem("msgIdValue", parseInt(msgIdValue));
@@ -128,11 +132,11 @@ const EnachRegistration = () => {
         customerTelephoneNumber: "",
         customerStartDate: currentDate,
         customerExpiryDate: expiryDate,
-        customerDebitAmount: debitAmount,
-        customerMaximumAmount: maxAmount,
+        customerDebitAmount: nachAmount,
+        customerMaximumAmount: mandateAmount,
         customerDebitFrequency: "MNTH",
         customerSeqenceType: "RCUR",
-        customerInstructedMemberId: "HDFC0000017",
+        customerInstructedMemberId: nachIfscCode,
         channel: channel,
         filler5: "S",
       };
@@ -140,6 +144,7 @@ const EnachRegistration = () => {
       setHiddenForm(true);
     });
   };
+
   const getApplicationListData = async () => {
     try {
       const response = await axios.post("/enach/enachDetails", {
@@ -155,8 +160,20 @@ const EnachRegistration = () => {
       setNachIfscCode(response.data.custIfscCode);
       setNachBank(response.data.custBankBranch);
       setMandateAmount(response.data.mandateAmount);
-      setMandateEndDate(response.data.mantadteEndDate);
-      setMandateStartDate(response.data.mantadteStartDate);
+      let endDate = response.data.mantadteEndDate;
+      setMandateEndDate(endDate);
+      setExpiryDate(
+        `${endDate.getFullYear()}-${
+          currentMonth > 9 ? currentMonth : "0" + currentMonth
+        }-${new Date().getDate()}`
+      );
+      let startDate = response.data.mantadteStartDate;
+      setMandateStartDate(startDate);
+      setCurrentDate(
+        `${startDate.getFullYear()}-${
+          currentMonth > 9 ? currentMonth : "0" + currentMonth
+        }-${new Date().getDate()}`
+      );
       setCustomerMobileNum(response.data.mobileNum);
       setCustomerName(response.data.userName);
       setNachAmount(response.data.nachAmount);

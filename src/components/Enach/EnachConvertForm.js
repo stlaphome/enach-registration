@@ -4,26 +4,25 @@ import "./EnachConvertForm.css";
 
 const EnachConvertForm = (props) => {
   const data = props.data;
-  const enable = false;
   let prefix = "\\x";
-
   let utilCode = data.utilCode !== "" && prefix + data.utilCode;
   let shortCode = data.shortCode !== "" && prefix + data.shortCode;
   let checkSum = data.checkSum;
   let merchantCategoryCode = data.merchantCategoryCode;
   let msgId = data.msgId;
-  let customerAccountName =
-    data.customerAccountName !== "" && prefix + data.customerAccountName;
+  let customerAccountName = prefix + data.customerAccountName;
   let customerTelephoneNumber =
     data.customerTelephoneNumber !== ""
       ? prefix + data.customerTelephoneNumber
       : "";
   let customerMaildId =
-    data.customerMaildId !== "" && prefix + data.customerMailId;
+    data.customerMaildId !== "" ? prefix + data.customerMailId : "";
   let customerMobileNumber =
-    data.customerMobileNumber !== "" && prefix + data.customerMobileNumber;
+    data.customerMobileNumber !== "" ? prefix + data.customerMobileNumber : "";
   let customerAccountNumber =
-    data.customerAccountNumber !== "" && prefix + data.customerAccountNumber;
+    data.customerAccountNumber !== ""
+      ? prefix + data.customerAccountNumber
+      : "";
   let customerStartDate = data.customerStartDate;
   let customerExpiryDate = data.customerExpiryDate;
   let customerDebitAmount = data.customerDebitAmount;
