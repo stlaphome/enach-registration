@@ -48,7 +48,7 @@ const EnachRegistration = () => {
   const [mobileNumber, setMobileNumber] = useState("");
   const [mailId, setMailId] = useState("");
   const [bankName, setBankName] = useState("");
-  const [accountNumber, setAccountNumber] = useState("");
+  const [accountNumber, setAccountNumber] = useState("50200003144866");
   const [accountType, setAccountType] = useState("");
   const [ifscCode, setIfscCode] = useState("");
   const [paymentType, setPayMentType] = useState("netbank");
@@ -83,9 +83,9 @@ const EnachRegistration = () => {
     "|" +
     expiryDate +
     "|" +
-    debitAmount +
+    debitAmount + //emi amount(nach amount)
     "|" +
-    maxAmount;
+    maxAmount; //mandate amount(nach amount*2)
   const [msgIdValue, setMsgIdValue] = useState(1);
   const [msgId, setMsgId] = useState("");
 
@@ -117,6 +117,7 @@ const EnachRegistration = () => {
 
   const enalbeFormAction = async () => {
     await axios.post("/enach/getEncryptedData", requstData).then((response) => {
+      setOpen(true);
       let data = response.data;
       localStorage.setItem("msgIdValue", parseInt(msgIdValue));
       let request = {
@@ -166,62 +167,7 @@ const EnachRegistration = () => {
       console.log("Network Error");
     }
   };
-  const saveDetails = async () => {
-    try {
-      // const emandateApi = axios.create({
-      //   baseURL: "https://emandateut.hdfcbank.com/",
-      // });
-      // const response = await emandateApi.get("testingapi.aspx", {
-      // CheckSum: "",
-      // MsgId: "",
-      // Customer_Name: "",
-      // Customer_Mobile: "",
-      // Customer_EmailId: "",
-      // CustomerAccountNo: "",
-      // Customer_StartDate: "",
-      // Customer_ExpirtyDate: "",
-      // Customer_DebitAmount: "",
-      // Customer_maxAmount: "",
-      // Customer_DebitFrequenty: "",
-      // Customer_InstructedMemberId: "",
-      // Short_Code: "",
-      // Customer_SequenceType: "",
-      // Merchant_Category_Code: "",
-      // Customer_Reference: "",
-      // Customer_Reference: "",
-      // Channel: "",
-      // UtilCode: "",
-      // Filter1: "",
-      // Filter2: "",
-      // Filter3: "",
-      // Filter4: "",
-      // Filter5: "",
-      // Filter6: "",
-      // Filter7: "",
-      // Filter8: "",
-      // Filter9: "",
-      // Filter10: "",
-      // applicationNum: window.location.pathname.split("=")[1],
-      // applicantName: applicantName,
-      // });
-      // setBranch(response.data.losData["branch"]);
-      // setEmiAmout(response.data.nachAmount["emiAmount"]);
-      // setAccountNumber(response.data.bankDetails["bankAccountNum"]);
-      // setAccountType(response.data.bankDetails["bankAccountType"]);
-      // setBankName(response.data.bankDetails["bankName"]);
-      setDebitType("Maxi Amount");
-      setFrequency("As and when Required");
-      // setIfscCode(response.data.bankDetails["ifscCode"]);
-      // setMailId(response.data.losData["emailId"]);
-      // setMobileNumber(response.data.losData["mobileNumber"]);
-      // setNachAmount(response.data.losData["nachAmount"]);
-      // setMandateEndDate("Until Cancelled");
-      window.open("https://emandateut.hdfcbank.com/testingapi.aspx");
-    } catch {
-      setContactAdmin(true);
-      console.log("Network Error");
-    }
-  };
+
   const getRadioAction = (event, value) => {
     value == "Net Banking" ? setChannel("Net") : setChannel("Debit");
   };
