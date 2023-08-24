@@ -36,10 +36,10 @@ const commonStyles = {
 
 const EnachRegistration = () => {
   const { appnum } = useParams();
-  let currentMonth = new Date().getMonth()+1;
+  let currentMonth = new Date().getMonth() + 1;
   const [currentDate, setCurrentDate] = useState(
-    `${new Date().getFullYear()}-${currentMonth>9?currentMonth:"0"+currentMonth
-      
+    `${new Date().getFullYear()}-${
+      currentMonth > 9 ? currentMonth : "0" + currentMonth
     }-${new Date().getDate()}`
   );
   const [customerName, setCustomerName] = useState("");
@@ -70,7 +70,7 @@ const EnachRegistration = () => {
   const [mandateAmount, setMandateAmount] = useState("");
   const [contactAdmin, setContactAdmin] = useState(false);
   const [open, setOpen] = useState(true);
-  const [hiddenForm, setHiddenForm] = useState(false);  
+  const [hiddenForm, setHiddenForm] = useState(false);
   const [channel, setChannel] = useState("");
   const customerAccountNumber = "50200003144866";
   const maxAmount = "5000.00";
@@ -99,56 +99,45 @@ const EnachRegistration = () => {
     let value = "L1" + ans;
     setMsgId(value);
   }, []);
- 
+
   const requestMap = {
     utilCode: "NACH00000000000382",
     shortCode: "SUNHFL",
-    checkSum: checksum ,
+    checkSum: checksum,
     customerAccountNumber: customerAccountNumber,
     customerAccountName: "mandate checking",
     customerMobileNumber: "8754549314",
     customerMailId: "sathyac@sundarambnpphome.in",
-    
   };
   const [requstData, setRequestData] = useState(requestMap);
   useEffect(() => {
-  // getApplicationListData();
+    getApplicationListData();
     setOpen(false);
   }, []);
- 
-  const enalbeFormAction = async() => {
-    await axios.post("/enach/getEncryptedData", requstData).then((response)=>{
+
+  const enalbeFormAction = async () => {
+    await axios.post("/enach/getEncryptedData", requstData).then((response) => {
       let data = response.data;
-      /* let parseData = new Map();
-       for(const key in data){
-          if(data.hasOwnProperty(key)){
-            let value = data[key];
-            if(key==="checkSum"){
-              parseData[key]=value;
-            }else{
-              let b =  ''+val
-             let c =  b.split(`/`)[1];
-               parseData[key]=b;
-            }
-         
-      }
-      } */
-    
-     localStorage.setItem("msgIdValue", parseInt(msgIdValue));
-     let request = { ...data, msgId: msgId, merchantCategoryCode: "L001",
-     msgId: msgId,customerTelephoneNumber: "",
-     customerStartDate: currentDate,
-     customerExpiryDate: expiryDate,
-     customerDebitAmount: debitAmount,
-     customerMaximumAmount: maxAmount,
-     customerDebitFrequency: "MNTH",
-     customerSeqenceType: "RCUR",
-     customerInstructedMemberId: "HDFC0000017",
-     channel: channel,
-     filler5: "S" };
-     setRequestData(request);
-     setHiddenForm(true);
-   });
+      localStorage.setItem("msgIdValue", parseInt(msgIdValue));
+      let request = {
+        ...data,
+        msgId: msgId,
+        merchantCategoryCode: "L001",
+        msgId: msgId,
+        customerTelephoneNumber: "",
+        customerStartDate: currentDate,
+        customerExpiryDate: expiryDate,
+        customerDebitAmount: debitAmount,
+        customerMaximumAmount: maxAmount,
+        customerDebitFrequency: "MNTH",
+        customerSeqenceType: "RCUR",
+        customerInstructedMemberId: "HDFC0000017",
+        channel: channel,
+        filler5: "S",
+      };
+      setRequestData(request);
+      setHiddenForm(true);
+    });
   };
   const getApplicationListData = async () => {
     try {
@@ -589,14 +578,14 @@ const EnachRegistration = () => {
       </Box>
       <Box sx={{ justifyContent: "center", display: "flex", margin: "8px" }}>
         <Button
-          variant="contained" onClick={enalbeFormAction}
+          variant="contained"
+          onClick={enalbeFormAction}
           sx={{
             marginLeft: "8px",
             height: "2rem",
             fontWeight: "bold",
           }}
         >
-            
           {" "}
           Submit{" "}
         </Button>
@@ -609,7 +598,7 @@ const EnachRegistration = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       )}
-       {hiddenForm && <EnachConvertForm enable={hiddenForm} data={requstData} />}
+      {hiddenForm && <EnachConvertForm enable={hiddenForm} data={requstData} />}
     </Box>
   );
 };
