@@ -39,9 +39,9 @@ import EnachConvertForm from "./EnachConvertForm";
     const { appnum } = useParams();
   let currentMonth = new Date().getMonth() + 1;
     const [currentDate, setCurrentDate] = useState(
-      `${new Date().getDate()}/${
-        new Date().getMonth() + 1
-      }/${new Date().getFullYear()}`
+      `${new Date().getFullYear()}-${
+        currentMonth > 9 ? currentMonth : "0" + currentMonth
+      }-${new Date().getDate()}`
     );
     const [customerName,setCustomerName] = useState("");
     const [branch, setBranch] = useState("");
@@ -113,6 +113,7 @@ import EnachConvertForm from "./EnachConvertForm";
       await axios.post("/enach/getEncryptedData", requestMap).then((response) => {
         setOpen(true);
         let data = response.data;
+        let sequence = debitType==="RECURRING"?"RCUR":frequency==="ONE OFF"?"OOFF":"";
         localStorage.setItem("msgIdValue", parseInt(msgIdValue));
         let request = {
           ...data,
@@ -124,8 +125,8 @@ import EnachConvertForm from "./EnachConvertForm";
           customerExpiryDate: expiryDate,
           customerDebitAmount: nachAmount,
           customerMaximumAmount: mandateAmount,
-          customerDebitFrequency: "MNTH",
-          customerSeqenceType: "RCUR",
+          customerDebitFrequency: sequence ==="OOFF"?"":frequency==="MONTHLY"?"MNTH":frequency==="AS WHEN REQUIRED"?"ADHO":"",
+          customerSeqenceType: sequence,
           customerInstructedMemberId: nachIfscCode,
           channel: channel,
           filler5: "S",
@@ -164,6 +165,9 @@ setPayMentType(event.target.value);
         );
         let startDate = response.data.mantadteStartDate;
         setMandateStartDate(startDate);
+        setCurrentDate(`${new Date(startDate).getFullYear()}-${
+          currentMonth > 9 ? currentMonth : "0" + currentMonth
+        }-${new Date().getDate()}`)
         setCustomerMobileNum(response.data.mobileNum);
         setCustomerName(response.data.userName);
         setNachAmount(response.data.nachAmount);
