@@ -58,8 +58,8 @@ import EnachConvertForm from "./EnachConvertForm";
     const [nachAmount, setNachAmount] = useState("");
       const [channel, setChannel] = useState("");
     const [mandateEndDate, setMandateEndDate] = useState("");
-  const [frequency, setFrequency] = useState("As and when Required");
-  const [debitType, setDebitType] = useState("Maximum Amount");
+  const [frequency, setFrequency] = useState("MONTHLY");
+  const [debitType, setDebitType] = useState("RECURRING");
     const [bankBranchName, setBankBranchName] = useState("");
     const [applicantNameList, setApplicantNameList] = useState([]);
     const[customerBank,setCustomerBank] = useState("");
@@ -183,14 +183,6 @@ setPayMentType(event.target.value);
     };
     const saveDetails = async () => {
       try {
-        setDebitType("Maxi Amount");
-        setFrequency("As and when Required");
-        // setIfscCode(response.data.bankDetails["ifscCode"]);
-        // setMailId(response.data.losData["emailId"]);
-        // setMobileNumber(response.data.losData["mobileNumber"]);
-        // setNachAmount(response.data.losData["nachAmount"]);
-        // setMandateEndDate("Until Cancelled");
-        // window.open("https://emandateut.hdfcbank.com/testingapi.aspx");
         const saveMap = {};
         saveMap['mailId']=mailId;
         saveMap['applicationId']=appnum;
@@ -200,8 +192,8 @@ setPayMentType(event.target.value);
         saveMap['custIfscCode']=nachIfscCode;
         saveMap['custBankBranch']=nachBank;
         saveMap['mandateAmount']=mandateAmount;
-        saveMap['mandateEndDate']=new Date(mandateEndDate).toString();
-        saveMap['mandateStartDate']=new Date(mandateStartDate).toString();
+        saveMap['mandateEndDate']=new Date(mandateEndDate);
+        saveMap['mandateStartDate']=new Date(mandateStartDate);
         saveMap['nachAmount']=nachAmount;
         saveMap['custBankAcctNum']=accountNumber;
         saveMap['modeOfPayment'] = paymentType;
@@ -255,8 +247,8 @@ setPayMentType(event.target.value);
             ? response.data.bankDetails["bankName"]
             : ""
         );
-        setDebitType("Maxi Amount");
-      setFrequency("As and when Required");
+        setDebitType("RECURRING");
+      setFrequency("MONTHLY");
         setIfscCode(
           response.data.bankDetails["ifscCode"]
             ? response.data.bankDetails["ifscCode"]
@@ -422,7 +414,7 @@ setPayMentType(event.target.value);
                   height: "2rem",
                   fontWeight: "bold"
           }} 
-          onClick={enalbeFormAction}
+          onClick={saveDetails}
          > Submit </Button>
         </Box>
        {open&& <Backdrop
