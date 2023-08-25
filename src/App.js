@@ -11,9 +11,10 @@ function App() {
   return (
     <div className="App">
       <Provider store={store}>
-     <Routes>
+        <Routes>
           {/* <Route path ="/login" element={<Idlogin/>}/> */}
-          <Route path ="/enach/:appnum" element={<EnachRegistration/>}/>
+          <Route path="/enach/:appnum" element={<EnachRegistration />} />
+          {/* <Route path="/enachForm" element={<EnachNewForm />} /> */}
           {/* <Route path ="/otp" element={<OTPSection/>}/> */}
           <Route path="/enachForm" element={<EnachNewForm />} />
       </Routes>

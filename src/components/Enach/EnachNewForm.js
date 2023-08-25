@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const EnachConvertForm = (props) => {
+const EnachNewForm = (props) => {
   const currentDate = new Date();
   const requestMap = {
     utilCode: "NACH00000000000382",
@@ -63,9 +63,8 @@ const EnachConvertForm = (props) => {
         type="hidden"
         id="CheckSum"
         name="CheckSum"
-        //value="50200003144866|2023-08-18|||5000.00"
-        
-        value="d8875cd75e46ad56ffdaa7c68109892e313aac909779c49ae0955819183be49e"
+        //value="50200003144866|2023-08-21|||5000.00"
+        value="7043bf1ca63fd7288771e31b5a3673f24eb45ec61f8fa9d89de6d647bad2d6d6"
       />
       <input
         type="hidden"
@@ -73,7 +72,7 @@ const EnachConvertForm = (props) => {
         name="Merchant_Category_Code"
         value="L001"
       />
-      <input type="hidden" id="MsgId" name="MsgId" value="L1000231" />
+      <input type="hidden" id="MsgId" name="MsgId" value="L1000258" />
       <input
         type="hidden"
         id="Customer_Name"
@@ -112,7 +111,7 @@ const EnachConvertForm = (props) => {
         type="hidden"
         id="Customer_StartDate"
         name="Customer_StartDate"
-        value="2023-08-18"
+        value="2023-08-24"
       />
       <input
         type="hidden"
@@ -177,4 +176,4 @@ const EnachConvertForm = (props) => {
     </form>
   );
 };
-export default EnachConvertForm;
+export default EnachNewForm;

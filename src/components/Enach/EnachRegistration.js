@@ -16,6 +16,8 @@ import {
   } from "@mui/material";
   import { Box } from "@mui/system";
   import axios from "axios";
+import CryptoJS from "crypto-js";
+
   import { React, useEffect, useState } from "react";
   import AccordianContainer from "../CustomComponents/AccordianContainer";
   import CustomDropDown from "../CustomComponents/CustomDropDown";
@@ -23,6 +25,7 @@ import {
 import { Refresh } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
 import contactImg from "../images/contact.png"
+import EnachConvertForm from "./EnachConvertForm";
   
   const commonStyles = {
     bgcolor: 'white',
@@ -34,6 +37,7 @@ import contactImg from "../images/contact.png"
 
   const EnachRegistration = () => {
     const { appnum } = useParams();
+  let currentMonth = new Date().getMonth() + 1;
     const [currentDate, setCurrentDate] = useState(
       `${new Date().getDate()}/${
         new Date().getMonth() + 1
@@ -41,6 +45,7 @@ import contactImg from "../images/contact.png"
     );
     const [customerName,setCustomerName] = useState("");
     const [branch, setBranch] = useState("");
+    const [hiddenForm, setHiddenForm] = useState(false);
     const [emiAmount, setEmiAmout] = useState("");
     const [mobileNumber, setMobileNumber] = useState("");
     const [mailId, setMailId] = useState("");
@@ -51,9 +56,10 @@ import contactImg from "../images/contact.png"
     const [paymentType, setPayMentType] = useState("netbank");
     const [applicantName, setApplicantName] = useState("");
     const [nachAmount, setNachAmount] = useState("");
+      const [channel, setChannel] = useState("");
     const [mandateEndDate, setMandateEndDate] = useState("");
-    const [frequency, setFrequency] = useState("");
-    const [debitType, setDebitType] = useState("");
+  const [frequency, setFrequency] = useState("As and when Required");
+  const [debitType, setDebitType] = useState("Maximum Amount");
     const [bankBranchName, setBankBranchName] = useState("");
     const [applicantNameList, setApplicantNameList] = useState([]);
     const[customerBank,setCustomerBank] = useState("");
@@ -68,10 +74,66 @@ import contactImg from "../images/contact.png"
    const [contactAdmin,setContactAdmin] = useState(false);
    const [open,setOpen] = useState(true);
    const[tenure,setTenure] = useState(1);
+   const [expiryDate, setExpiryDate] = useState("");
+   const [msgIdValue, setMsgIdValue] = useState(1);
+   const [msgId, setMsgId] = useState("");
+   const [requstData, setRequestData] = useState({});
     useEffect(() => {
+      let storedmsgIdValue = parseInt(localStorage.getItem("msgIdValue") || "1");
+    storedmsgIdValue = storedmsgIdValue + 1;
+    setMsgIdValue(storedmsgIdValue);
+    let str = "" + storedmsgIdValue;
+    let pad = "000100";
+    let ans = pad.substring(0, pad.length - str.length) + str;
+    let value = "L1" + ans;
+    setMsgId(value);
       getApplicationListData();
       setOpen(false)
     }, []);
+    const enalbeFormAction = async () => {
+      const checksum =
+        accountNumber +
+        "|" +
+        currentDate +
+        "|" +
+        expiryDate +
+        "|" +
+        nachAmount + //emi amount(nach amount) it should be ""
+        "|" +
+        mandateAmount; //mandate amount(nach amount*2)
+      const requestMap = {
+        utilCode: "NACH00000000000382",
+        shortCode: "SUNHFL",
+        checkSum: checksum,
+        customerAccountNumber: accountNumber,
+        customerAccountName: customerName,
+        customerMobileNumber: customerMobileNum,
+        customerMailId: customerMailId,
+      };
+      await axios.post("/enach/getEncryptedData", requestMap).then((response) => {
+        setOpen(true);
+        let data = response.data;
+        localStorage.setItem("msgIdValue", parseInt(msgIdValue));
+        let request = {
+          ...data,
+          msgId: msgId,
+          merchantCategoryCode: "L001",
+          msgId: msgId,
+          customerTelephoneNumber: "",
+          customerStartDate: currentDate,
+          customerExpiryDate: expiryDate,
+          customerDebitAmount: nachAmount,
+          customerMaximumAmount: mandateAmount,
+          customerDebitFrequency: "MNTH",
+          customerSeqenceType: "RCUR",
+          customerInstructedMemberId: nachIfscCode,
+          channel: channel,
+          filler5: "S",
+        };
+        setRequestData(request);
+        setHiddenForm(true);
+      });
+    };
   const handlePaymentType = (event)=>{
 setPayMentType(event.target.value);
   }
@@ -91,13 +153,25 @@ setPayMentType(event.target.value);
         setNachBank(response.data.custBankBranch);
         setMandateAmount(response.data.mandateAmount);
         setMandateEndDate(response.data.mantadteEndDate);
-        setMandateStartDate(response.data.mantadteStartDate);
+        setMandateStartDate(response.data.mantadteStartDate); 
+        setNachBankBranch(response.data.custBankBranch); 
+        let endDate = response.data.mantadteEndDate;
+        setMandateEndDate(endDate);
+        setExpiryDate(
+          `${new Date(endDate).getFullYear()}-${
+            currentMonth > 9 ? currentMonth : "0" + currentMonth
+          }-${new Date().getDate()}`
+        );
+        let startDate = response.data.mantadteStartDate;
+        setMandateStartDate(startDate);
         setCustomerMobileNum(response.data.mobileNum);
         setCustomerName(response.data.userName);
         setNachAmount(response.data.nachAmount);
         setNachBank(response.data.custIfscCode);
         setAccountNumber(response.data.custBankAcctNum);
         setTenure(response.data.tenure);
+        setNachBankType(response.data.custBankAcctType);
+        setNachBank(response.data.nachBank);
       } catch {
         setContactAdmin(true);
         console.log("Network Error");
@@ -105,47 +179,6 @@ setPayMentType(event.target.value);
     };
     const saveDetails = async () => {
       try {
-        // const emandateApi = axios.create({
-        //   baseURL: "https://emandateut.hdfcbank.com/",
-        // });
-        // const response = await emandateApi.get("testingapi.aspx", {
-        // CheckSum: "",
-        // MsgId: "",
-        // Customer_Name: "",
-        // Customer_Mobile: "",
-        // Customer_EmailId: "",
-        // CustomerAccountNo: "",
-        // Customer_StartDate: "",
-        // Customer_ExpirtyDate: "",
-        // Customer_DebitAmount: "",
-        // Customer_maxAmount: "",
-        // Customer_DebitFrequenty: "",
-        // Customer_InstructedMemberId: "",
-        // Short_Code: "",
-        // Customer_SequenceType: "",
-        // Merchant_Category_Code: "",
-        // Customer_Reference: "",
-        // Customer_Reference: "",
-        // Channel: "",
-        // UtilCode: "",
-        // Filter1: "",
-        // Filter2: "",
-        // Filter3: "",
-        // Filter4: "",
-        // Filter5: "",
-        // Filter6: "",
-        // Filter7: "",
-        // Filter8: "",
-        // Filter9: "",
-        // Filter10: "",
-        // applicationNum: window.location.pathname.split("=")[1],
-        // applicantName: applicantName,
-        // });
-        // setBranch(response.data.losData["branch"]);
-        // setEmiAmout(response.data.nachAmount["emiAmount"]);
-        // setAccountNumber(response.data.bankDetails["bankAccountNum"]);
-        // setAccountType(response.data.bankDetails["bankAccountType"]);
-        // setBankName(response.data.bankDetails["bankName"]);
         setDebitType("Maxi Amount");
         setFrequency("As and when Required");
         // setIfscCode(response.data.bankDetails["ifscCode"]);
@@ -163,7 +196,7 @@ setPayMentType(event.target.value);
         saveMap['custIfscCode']=nachIfscCode;
         saveMap['custBankBranch']=nachBank;
         saveMap['mandateAmount']=mandateAmount;
-        saveMap['mandateEndDate']=new Date(new Date(mandateStartDate).setFullYear(new Date(mandateStartDate).getFullYear()+tenure)).toString();
+        saveMap['mandateEndDate']=new Date(mandateEndDate).toString();
         saveMap['mandateStartDate']=new Date(mandateStartDate).toString();
         saveMap['nachAmount']=nachAmount;
         saveMap['custBankAcctNum']=accountNumber;
@@ -179,6 +212,11 @@ setPayMentType(event.target.value);
         setContactAdmin(true);
         console.log("Network Error");
       }
+      enalbeFormAction();
+    };
+    
+    const getRadioAction = (event, value) => {
+      value == "Net Banking" ? setChannel("Net") : setChannel("Debit");
     };
     const getEnachDetails = async (applicantName) => {
       try {
@@ -213,8 +251,8 @@ setPayMentType(event.target.value);
             ? response.data.bankDetails["bankName"]
             : ""
         );
-        setDebitType("");
-        setFrequency("");
+        setDebitType("Maxi Amount");
+      setFrequency("As and when Required");
         setIfscCode(
           response.data.bankDetails["ifscCode"]
             ? response.data.bankDetails["ifscCode"]
@@ -325,12 +363,12 @@ setPayMentType(event.target.value);
             <Grid container rowSpacing={0} columnSpacing={2}>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                     <Box sx={{marginLeft: "8px", width: "100%"}}>
-                        <CustomTextField label={"Mandate Amount (₹)"} disabled= {true} value={mandateAmount}  variant={"standard"}></CustomTextField>
+                        <CustomTextField label={"Mandate Amount (₹)"} disabled= {true} value={new Number(mandateAmount).toLocaleString('en-IN')}  variant={"standard"}></CustomTextField>
                     </Box>
                 </Grid>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                   <Box sx={{marginLeft: "8px", width: "100%"}}>
-                    <CustomTextField label={"Nach Amount (₹)"} value={nachAmount} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Nach Amount (₹)"} value={new Number(nachAmount).toLocaleString('en-IN')} disabled= {true}  variant={"standard"}></CustomTextField>
                   </Box>
                 </Grid>
                 <Grid container rowSpacing={0} columnSpacing={2} sx={{marginLeft: "8px"}}>
@@ -338,7 +376,7 @@ setPayMentType(event.target.value);
                     <CustomTextField label={"Mandate Start Date"} value={new Date(mandateStartDate).toLocaleDateString("fr-FR")} disabled= {true}  variant={"standard"}></CustomTextField>
                 </Grid>
                 <Grid item xs={5.87} sm={5.75} md={4} lg={5.9} xl={3}>
-                    <CustomTextField label={"Mandate End Date"} value={new Date(new Date(mandateStartDate).setFullYear(new Date(mandateStartDate).getFullYear()+tenure)).toLocaleDateString("fr-FR")} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Mandate End Date"} value={new Date(mandateEndDate).toLocaleDateString("fr-FR")} disabled= {true}  variant={"standard"}></CustomTextField>
                 </Grid>
                 </Grid>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
@@ -380,7 +418,7 @@ setPayMentType(event.target.value);
                   height: "2rem",
                   fontWeight: "bold"
           }} 
-          onClick={saveDetails}
+          onClick={enalbeFormAction}
          > Submit </Button>
         </Box>
        {open&& <Backdrop
@@ -390,6 +428,7 @@ setPayMentType(event.target.value);
       >
         <CircularProgress color="inherit" />
       </Backdrop>}
+      {hiddenForm && <EnachConvertForm enable={hiddenForm} data={requstData} />}
       </Box>
   )
     );
