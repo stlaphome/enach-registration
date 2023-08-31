@@ -78,6 +78,7 @@ import EnachConvertForm from "./EnachConvertForm";
    const [msgIdValue, setMsgIdValue] = useState(1);
    const [msgId, setMsgId] = useState("");
    const [requstData, setRequestData] = useState({});
+   const [submitDisable,setSubmitDisable]=useState(false);
     useEffect(() => {
       let storedmsgIdValue = parseInt(localStorage.getItem("msgIdValue") || "1");
     storedmsgIdValue = storedmsgIdValue + 1;
@@ -144,38 +145,45 @@ setPayMentType(event.target.value);
           applicationNum: appnum,
           applicationName:'ltu'
         });
-        setApplicantNameList(response.data);
-        setMailId(response.data.mailId);
-        setMobileNumber(response.data.mobileNum);
-        setCustomerBank(response.data.branch);
-        setCustomerMailId(response.data.emailId);
-        setApplicantName(response.data.userName);
-        setNachIfscCode(response.data.custIfscCode);
-        setNachBank(response.data.custBankBranch);
-        setMandateAmount(response.data.mandateAmount);
-        setMandateEndDate(response.data.mantadteEndDate);
-        setMandateStartDate(response.data.mantadteStartDate); 
-        setNachBankBranch(response.data.custBankBranch); 
-        let endDate = response.data.mantadteEndDate;
+        console.log(response.data);
+        let responseMap = response.data;
+        if(responseMap.length>0){
+        setApplicantNameList(responseMap);
+        setMailId(responseMap.mailId);
+        setMobileNumber(responseMap.mobileNum);
+        setCustomerBank(responseMap.branch);
+        setCustomerMailId(responseMap.emailId);
+        setApplicantName(responseMap.userName);
+        setNachIfscCode(responseMap.custIfscCode);
+        setNachBank(responseMap.custBankBranch);
+        setMandateAmount(responseMap.mandateAmount);
+        setMandateEndDate(responseMap.mantadteEndDate);
+        setMandateStartDate(responseMap.mantadteStartDate); 
+        setNachBankBranch(responseMap.custBankBranch); 
+        let endDate = responseMap.mantadteEndDate;
         setMandateEndDate(endDate);
         setExpiryDate(
           `${new Date(endDate).getFullYear()}-${
             currentMonth > 9 ? currentMonth : "0" + currentMonth
           }-${new Date().getDate()}`
         );
-        let startDate = response.data.mantadteStartDate;
+        let startDate = responseMap.mantadteStartDate;
         setMandateStartDate(startDate);
         setCurrentDate(`${new Date(startDate).getFullYear()}-${
           currentMonth > 9 ? currentMonth : "0" + currentMonth
         }-${new Date().getDate()}`)
-        setCustomerMobileNum(response.data.mobileNum);
-        setCustomerName(response.data.userName);
-        setNachAmount(response.data.nachAmount);
-        setNachBank(response.data.custIfscCode);
-        setAccountNumber(response.data.custBankAcctNum);
-        setTenure(response.data.tenure);
-        setNachBankType(response.data.custBankAcctType);
-        setNachBank(response.data.nachBank);
+        setCustomerMobileNum(responseMap.mobileNum);
+        setCustomerName(responseMap.userName);
+        setNachAmount(responseMap.nachAmount);
+        setNachBank(responseMap.custIfscCode);
+        setAccountNumber(responseMap.custBankAcctNum);
+        setTenure(responseMap.tenure);
+        setNachBankType(responseMap.custBankAcctType);
+        setNachBank(responseMap.nachBank);
+        }else{
+          console.log("No Data present");
+          setSubmitDisable(true);
+        }        
       } catch {
         setContactAdmin(true);
         console.log("Network Error");
@@ -369,10 +377,10 @@ setPayMentType(event.target.value);
                 </Grid>
                 <Grid container rowSpacing={0} columnSpacing={2} sx={{marginLeft: "8px"}}>
                 <Grid item xs={5.87} sm={5.75} md={4} lg={5.9} xl={3}>
-                    <CustomTextField label={"Mandate Start Date"} value={new Date(mandateStartDate).toLocaleDateString("fr-FR")} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Mandate Start Date"} value={mandateStartDate!=="" ? new Date(mandateStartDate).toLocaleDateString("fr-FR"):""} disabled= {true}  variant={"standard"}></CustomTextField>
                 </Grid>
                 <Grid item xs={5.87} sm={5.75} md={4} lg={5.9} xl={3}>
-                    <CustomTextField label={"Mandate End Date"} value={new Date(mandateEndDate).toLocaleDateString("fr-FR")} disabled= {true}  variant={"standard"}></CustomTextField>
+                    <CustomTextField label={"Mandate End Date"} value={mandateEndDate!=="" ? new Date(mandateEndDate).toLocaleDateString("fr-FR"):""} disabled= {true}  variant={"standard"}></CustomTextField>
                 </Grid>
                 </Grid>
                 <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
@@ -414,7 +422,8 @@ setPayMentType(event.target.value);
                   height: "2rem",
                   fontWeight: "bold"
           }} 
-          onClick={saveDetails}
+          disabled={submitDisable}
+          onClick={saveDetails} 
          > Submit </Button>
         </Box>
        {open&& <Backdrop
