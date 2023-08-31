@@ -78,7 +78,7 @@ import EnachConvertForm from "./EnachConvertForm";
    const [msgIdValue, setMsgIdValue] = useState(1);
    const [msgId, setMsgId] = useState("");
    const [requstData, setRequestData] = useState({});
-   const [submitDisable,setSubmitDisable]=useState(false);
+   const [submitDisable,setSubmitDisable]=useState(true);
     useEffect(() => {
       let storedmsgIdValue = parseInt(localStorage.getItem("msgIdValue") || "1");
     storedmsgIdValue = storedmsgIdValue + 1;
@@ -180,6 +180,7 @@ setPayMentType(event.target.value);
         setTenure(responseMap.tenure);
         setNachBankType(responseMap.custBankAcctType);
         setNachBank(responseMap.nachBank);
+        setSubmitDisable(false);
         }else{
           console.log("No Data present");
           setSubmitDisable(true);
