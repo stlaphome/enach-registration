@@ -56,7 +56,7 @@ import EnachConvertForm from "./EnachConvertForm";
     const [paymentType, setPayMentType] = useState("netbank");
     const [applicantName, setApplicantName] = useState("");
     const [nachAmount, setNachAmount] = useState("");
-      const [channel, setChannel] = useState("");
+      const [channel, setChannel] = useState("Net");
     const [mandateEndDate, setMandateEndDate] = useState("");
   const [frequency, setFrequency] = useState("MONTHLY");
   const [debitType, setDebitType] = useState("RECURRING");
@@ -79,14 +79,14 @@ import EnachConvertForm from "./EnachConvertForm";
    const [msgId, setMsgId] = useState("");
    const [requstData, setRequestData] = useState({});
     useEffect(() => {
-      let storedmsgIdValue = parseInt(localStorage.getItem("msgIdValue") || "1");
+     /*  let storedmsgIdValue = parseInt(localStorage.getItem("msgIdValue") || "1");
     storedmsgIdValue = storedmsgIdValue + 1;
     setMsgIdValue(storedmsgIdValue);
     let str = "" + storedmsgIdValue;
     let pad = "000100";
     let ans = pad.substring(0, pad.length - str.length) + str;
     let value = "L1" + ans;
-    setMsgId(value);
+    setMsgId(value); */
       getApplicationListData();
       setOpen(false)
     }, []);
@@ -110,16 +110,25 @@ import EnachConvertForm from "./EnachConvertForm";
         customerMobileNumber: customerMobileNum,
         customerMailId: customerMailId,
       };
+      let msgValue = 0;
+      let request = {};
       await axios.post("/enach/getEncryptedData", requestMap).then((response) => {
         setOpen(true);
         let data = response.data;
+       
         let sequence = debitType==="RECURRING"?"RCUR":frequency==="ONE OFF"?"OOFF":"";
-        localStorage.setItem("msgIdValue", parseInt(msgIdValue));
-        let request = {
+       // localStorage.setItem("msgIdValue", parseInt(msgIdValue));
+        msgValue = data.msgIdValue +1;
+       setMsgIdValue(msgValue);
+       let str = "" + msgValue;
+       let pad = "000300";
+       let ans = pad.substring(0, pad.length - str.length) + str;
+       let value = "L1" + ans;
+       
+         request = {
           ...data,
-          msgId: msgId,
+          msgId: value,
           merchantCategoryCode: "L001",
-          msgId: msgId,
           customerTelephoneNumber: "",
           customerStartDate: currentDate,
           customerExpiryDate: expiryDate,
@@ -131,9 +140,40 @@ import EnachConvertForm from "./EnachConvertForm";
           channel: channel,
           filler5: "S",
         };
+        setMsgId(value);
         setRequestData(request);
+      }).then(()=>{
+        try {
+          const saveMap = {};
+          saveMap['mailId']=mailId;
+          saveMap['applicationId']=appnum;
+          saveMap['mobileNum']=customerMobileNum;
+          saveMap['emailId']=customerMailId;
+          saveMap['userName']=applicantName;
+          saveMap['custIfscCode']=nachIfscCode;
+          saveMap['custBankBranch']=nachBank;
+          saveMap['mandateAmount']=mandateAmount;
+          saveMap['mandateEndDate']=new Date(mandateEndDate);
+          saveMap['mandateStartDate']=new Date(mandateStartDate);
+          saveMap['nachAmount']=nachAmount;
+          saveMap['custBankAcctNum']=accountNumber;
+          saveMap['modeOfPayment'] = paymentType;
+          saveMap['requestData'] = request;
+          saveMap['msgId'] = msgValue;
+          try {
+             axios.post("/enach/saveDetails", saveMap);
+           
+          } catch {
+            setContactAdmin(true);
+            console.log("Network Error");
+          }
+        } catch {
+          setContactAdmin(true);
+          console.log("Network Error");
+        }
+      }).then(()=>{
         setHiddenForm(true);
-      });
+      })
     };
   const handlePaymentType = (event)=>{
 setPayMentType(event.target.value);
@@ -149,6 +189,7 @@ setPayMentType(event.target.value);
         setMobileNumber(response.data.mobileNum);
         setCustomerBank(response.data.branch);
         setCustomerMailId(response.data.emailId);
+        //setCustomerMailId("sathyac@sundarambnpphome.in");
         setApplicantName(response.data.userName);
         setNachIfscCode(response.data.custIfscCode);
         setNachBank(response.data.custBankBranch);
@@ -156,9 +197,9 @@ setPayMentType(event.target.value);
         setMandateEndDate(response.data.mantadteEndDate);
         setMandateStartDate(response.data.mantadteStartDate); 
         setNachBankBranch(response.data.custBankBranch); 
-        let endDate = response.data.mantadteEndDate;
+        let endDate = response.data.mantadteEndDate!==null ?response.data.mantadteEndDate!==null:"";
         setMandateEndDate(endDate);
-        setExpiryDate(
+        endDate !=="" && setExpiryDate(
           `${new Date(endDate).getFullYear()}-${
             currentMonth > 9 ? currentMonth : "0" + currentMonth
           }-${new Date().getDate()}`
@@ -170,7 +211,7 @@ setPayMentType(event.target.value);
         }-${new Date().getDate()}`)
         setCustomerMobileNum(response.data.mobileNum);
         setCustomerName(response.data.userName);
-        setNachAmount(response.data.nachAmount);
+        setNachAmount(response.data.nachAmount!==null ? response.data.nachAmount:"");
         setNachBank(response.data.custIfscCode);
         setAccountNumber(response.data.custBankAcctNum);
         setTenure(response.data.tenure);
@@ -182,37 +223,13 @@ setPayMentType(event.target.value);
       }
     };
     const saveDetails = async () => {
-      try {
-        const saveMap = {};
-        saveMap['mailId']=mailId;
-        saveMap['applicationId']=appnum;
-        saveMap['mobileNum']=customerMobileNum;
-        saveMap['emailId']=customerMailId;
-        saveMap['userName']=applicantName;
-        saveMap['custIfscCode']=nachIfscCode;
-        saveMap['custBankBranch']=nachBank;
-        saveMap['mandateAmount']=mandateAmount;
-        saveMap['mandateEndDate']=new Date(mandateEndDate);
-        saveMap['mandateStartDate']=new Date(mandateStartDate);
-        saveMap['nachAmount']=nachAmount;
-        saveMap['custBankAcctNum']=accountNumber;
-        saveMap['modeOfPayment'] = paymentType;
-        try {
-          const response = await axios.post("/enach/saveDetails", saveMap);
-         
-        } catch {
-          setContactAdmin(true);
-          console.log("Network Error");
-        }
-      } catch {
-        setContactAdmin(true);
-        console.log("Network Error");
-      }
+     
       enalbeFormAction();
     };
     
     const getRadioAction = (event, value) => {
       value == "Net Banking" ? setChannel("Net") : setChannel("Debit");
+      setPayMentType(event.target.value);
     };
     const getEnachDetails = async (applicantName) => {
       try {
@@ -397,7 +414,7 @@ setPayMentType(event.target.value);
              
             }}
           >Mode Of payment for Registration</FormLabel>
-          <RadioGroup  row onChange={handlePaymentType} value={paymentType}>
+          <RadioGroup  row onChange={getRadioAction} value={paymentType}>
           <FormControlLabel sx={{fontWeight: 400, fontSize: "14px !important",
               }} disableTypography={true} value="netbank" selected  control={<Radio />} label="Net Banking" />
           <FormControlLabel sx={{fontWeight: 400, fontSize: "14px !important",
