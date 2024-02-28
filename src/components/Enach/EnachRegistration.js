@@ -36,7 +36,7 @@ import EnachConvertForm from "./EnachConvertForm";
   };
 
   const EnachRegistration = () => {
-    const { appnum } = useParams();
+    
   let currentMonth = new Date().getMonth() + 1;
     const [currentDate, setCurrentDate] = useState(
       `${new Date().getFullYear()}-${
@@ -78,6 +78,8 @@ import EnachConvertForm from "./EnachConvertForm";
    const [msgIdValue, setMsgIdValue] = useState(1);
    const [msgId, setMsgId] = useState("");
    const [requstData, setRequestData] = useState({});
+   const [appNum,setAppNum]=useState("");
+    
     useEffect(() => {
      /*  let storedmsgIdValue = parseInt(localStorage.getItem("msgIdValue") || "1");
     storedmsgIdValue = storedmsgIdValue + 1;
@@ -146,7 +148,7 @@ import EnachConvertForm from "./EnachConvertForm";
         try {
           const saveMap = {};
           saveMap['mailId']=mailId;
-          saveMap['applicationId']=appnum;
+          saveMap['applicationId']=appNum;
           saveMap['mobileNum']=customerMobileNum;
           saveMap['emailId']=customerMailId;
           saveMap['userName']=applicantName;
@@ -179,44 +181,48 @@ import EnachConvertForm from "./EnachConvertForm";
 setPayMentType(event.target.value);
   }
     const getApplicationListData = async () => {
+      const url = window.location.href;
+    let appNum= url.split('=')[1];
+     setAppNum(appNum);
       try {
         const response = await axios.post("/enach/enachDetails", {
-          applicationNum: appnum,
-          applicationName:'ltu'
+          applicationNum: appNum,
         });
-        setApplicantNameList(response.data);
-        setMailId(response.data.mailId);
-        setMobileNumber(response.data.mobileNum);
-        setCustomerBank(response.data.branch);
-        setCustomerMailId(response.data.emailId);
-        //setCustomerMailId("sathyac@sundarambnpphome.in");
-        setApplicantName(response.data.userName);
-        setNachIfscCode(response.data.custIfscCode);
-        setNachBank(response.data.custBankBranch);
-        setMandateAmount(response.data.mandateAmount);
-        setMandateEndDate(response.data.mantadteEndDate);
-        setMandateStartDate(response.data.mantadteStartDate); 
-        setNachBankBranch(response.data.custBankBranch); 
-        let endDate = response.data.mantadteEndDate!==null ?response.data.mantadteEndDate!==null:"";
-        setMandateEndDate(endDate);
-        endDate !=="" && setExpiryDate(
-          `${new Date(endDate).getFullYear()}-${
+        if(response.data!==null){
+          setApplicantNameList(response.data);
+          setMailId(response.data.mailId);
+          setMobileNumber(response.data.mobileNum);
+          setCustomerBank(response.data.branch);
+          setCustomerMailId(response.data.emailId);
+          //setCustomerMailId("sathyac@sundarambnpphome.in");
+          setApplicantName(response.data.userName);
+          setNachIfscCode(response.data.custIfscCode);
+          setNachBank(response.data.custBankBranch);
+          setMandateAmount(response.data.mandateAmount);
+          setMandateEndDate(response.data.mantadteEndDate);
+          setMandateStartDate(response.data.mantadteStartDate); 
+          setNachBankBranch(response.data.custBankBranch); 
+          let endDate = response.data.mantadteEndDate!==null ?response.data.mantadteEndDate!==null:"";
+          setMandateEndDate(endDate);
+          endDate !=="" && setExpiryDate(
+            `${new Date(endDate).getFullYear()}-${
+              currentMonth > 9 ? currentMonth : "0" + currentMonth
+            }-${new Date().getDate()}`
+          );
+          let startDate = response.data.mantadteStartDate;
+          setMandateStartDate(startDate);
+          setCurrentDate(`${new Date(startDate).getFullYear()}-${
             currentMonth > 9 ? currentMonth : "0" + currentMonth
-          }-${new Date().getDate()}`
-        );
-        let startDate = response.data.mantadteStartDate;
-        setMandateStartDate(startDate);
-        setCurrentDate(`${new Date(startDate).getFullYear()}-${
-          currentMonth > 9 ? currentMonth : "0" + currentMonth
-        }-${new Date().getDate()}`)
-        setCustomerMobileNum(response.data.mobileNum);
-        setCustomerName(response.data.userName);
-        setNachAmount(response.data.nachAmount!==null ? response.data.nachAmount:"");
-        setNachBank(response.data.custIfscCode);
-        setAccountNumber(response.data.custBankAcctNum);
-        setTenure(response.data.tenure);
-        setNachBankType(response.data.custBankAcctType);
-        setNachBank(response.data.nachBank);
+          }-${new Date().getDate()}`)
+          setCustomerMobileNum(response.data.mobileNum);
+          setCustomerName(response.data.userName);
+          setNachAmount(response.data.nachAmount!==null ? response.data.nachAmount:"");
+          setNachBank(response.data.custIfscCode);
+          setAccountNumber(response.data.custBankAcctNum);
+          setTenure(response.data.tenure);
+          setNachBankType(response.data.bankAccountType);
+          setNachBank(response.data.nachBank);
+        }
       } catch {
         setContactAdmin(true);
         console.log("Network Error");
@@ -234,7 +240,7 @@ setPayMentType(event.target.value);
     const getEnachDetails = async (applicantName) => {
       try {
         const response = await axios.post("/enach/enachDetails", {
-          applicationNum: appnum
+          applicationNum: appNum
         });
         setBranch(
           response.data.losData["branch"] ? response.data.losData["branch"] : ""
