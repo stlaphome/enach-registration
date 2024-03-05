@@ -2,6 +2,7 @@
   "name": "enach-registration",
   "version": "0.1.0",
   "private": true,
+  "homepage":"/enach",
   "engines": {
     "node": "18.12.0",
     "npm": "8.19.2"
@@ -42,7 +43,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && copy build\\enach\\index.html build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
