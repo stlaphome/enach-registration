@@ -204,7 +204,7 @@ setPayMentType(event.target.value);
         setMandateEndDate(response.data.mantadteEndDate);
         setMandateStartDate(response.data.mantadteStartDate); 
         setNachBankBranch(response.data.custBankBranch); 
-        let endDate = response.data.mantadteEndDate!==null ?response.data.mantadteEndDate!==null:"";
+        let endDate = response.data.mantadteEndDate!==null ?response.data.mantadteEndDate:"";
         setMandateEndDate(endDate);
         endDate !=="" && setExpiryDate(
           `${new Date(endDate).getFullYear()}-${
