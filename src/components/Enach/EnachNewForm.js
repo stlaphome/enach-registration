@@ -64,8 +64,8 @@ const EnachNewForm = (props) => {
         type="hidden"
         id="CheckSum"
         name="CheckSum"
-        //value="50200003144866|2023-09-22|||5000.00"
-        value="5dc2f11e64c215810a29ba4a55556ed0c7ea3363d13c58d84e75fb0c9e80e8b5"
+        //value="50200003144866|2024-09-22|||5000.00"
+        value="90a9ad6138dc14484ac278656563e0f44afa63ab39e17f5c9e1c7e56695a0d10"
       />
       <input
         type="hidden"
@@ -73,7 +73,7 @@ const EnachNewForm = (props) => {
         name="Merchant_Category_Code"
         value="L001"
       />
-      <input type="hidden" id="MsgId" name="MsgId" value="L1000304" />
+      <input type="hidden" id="MsgId" name="MsgId" value="L1000307" />
       <input
         type="hidden"
         id="Customer_Name"
@@ -112,7 +112,7 @@ const EnachNewForm = (props) => {
         type="hidden"
         id="Customer_StartDate"
         name="Customer_StartDate"
-        value="2023-09-22"
+        value="2024-09-22"
       />
       <input
         type="hidden"
