@@ -61,13 +61,13 @@ const EnachStatusPage = () => {
                          
                     </Box>
                 </>    
-                    :   <InputLabel sx={{display: "flex", justifyContent: "center", marginBottom: "16px"}}>Your Payment is Processing... please wait.</InputLabel> }
+                    :   <InputLabel sx={{display: "flex", justifyContent: "center", marginBottom: "16px"}}>Your Enach is Processing... please wait.</InputLabel> }
             </Box>
             : "true" === "false" && (<Box sx={{justifyContent: "center"}}>
                 <TransitionNotSuccess isTransitionCompleted={notSuccessTransitionCompleted} duration={2} width={100} height={100}/> 
                 { isNotSuccessTransitionCompleted ? 
-                        <InputLabel sx={{display: "flex", justifyContent: "center", marginBottom: "16px"}}>Sorry !! Payment Failed.</InputLabel>
-                    :   <InputLabel sx={{display: "flex", justifyContent: "center", marginBottom: "16px"}}>Your Payment is Processing... please wait.</InputLabel> }
+                        <InputLabel sx={{display: "flex", justifyContent: "center", marginBottom: "16px"}}>Sorry !! Enach Failed.</InputLabel>
+                    :   <InputLabel sx={{display: "flex", justifyContent: "center", marginBottom: "16px"}}>Your Enach is Processing... please wait.</InputLabel> }
                     </Box>)
            )}
         </Box>
