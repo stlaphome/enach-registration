@@ -73,7 +73,7 @@ function CircularProgress({ progress }) {
         <CircularProgress progress={progress} />
       </div>
       {isTransitionCompleted === true ? 
-            <InputLabel sx={{display: "flex", justifyContent: "center"}}>Loan has been processed Successfully</InputLabel>
+            <InputLabel sx={{display: "flex", justifyContent: "center"}}>Enach has been processed Successfully</InputLabel>
        : <></> }
       </Box>
     )
