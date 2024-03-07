@@ -6,16 +6,16 @@ import OTPSection from "./components/otp/OTPSection";
 import { Provider } from "react-redux";
 import store from "./components/Store/storeindex";
 import EnachNewForm from "./components/Enach/EnachNewForm";
+import EnachStatusPage from "./components/Enach/EnachStatusPage";
 
 function App() {
   return (
     <div className="App">
       <Provider store={store}>
         <Routes>
-          {/* <Route path ="/login" element={<Idlogin/>}/> */}
           <Route path="/enach/:appnum" element={<EnachRegistration />} />
-          {/* <Route path="/enachForm" element={<EnachNewForm />} /> */}
-          {/* <Route path ="/otp" element={<OTPSection/>}/> */}
+          <Route path="/enachForm" element={<EnachNewForm />} />
+          <Route path ="/enachResponse" element={<EnachStatusPage/>}/>
         </Routes>
       </Provider>
     </div>
