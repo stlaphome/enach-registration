@@ -60,8 +60,15 @@ const commonStyles = {
   const [nachAmount, setNachAmount] = useState("");
   const [channel, setChannel] = useState("Net");
   const [mandateEndDate, setMandateEndDate] = useState("");
-  const [frequency, setFrequency] = useState("MONTHLY");
-  const [debitType, setDebitType] = useState("RECURRING");
+  const [frequency, setFrequency] = useState("");
+  const [frequencyName, setFrequencyName] = useState("");
+  const [frequencyList, setFrequencyList] = useState([{"value":"1","text":"Monthly"},{"value":"2","text":"Yearly"},{"value":"3","text":"As and when Required"}]);
+  const [frequencyDisable, setFrequencyDisable] = useState(true);
+
+  const [debitType, setDebitType] = useState("");
+  const [debitTypeName, setDebitTypeName] = useState("");
+  const [debitTypeDisable, setDebitTypeDisable] = useState(true);
+  const [debitTypeList, setDebitTypeList] = useState([{"value":"1","text":"RECURRING"},{"value":"2","text":"ONE OFF"}]);
     const [bankBranchName, setBankBranchName] = useState("");
     const [applicantNameList, setApplicantNameList] = useState([]);
     const[customerBank,setCustomerBank] = useState("");
@@ -83,14 +90,6 @@ const commonStyles = {
    const [appNum,setAppNum]=useState("");
     
     useEffect(() => {
-     /*  let storedmsgIdValue = parseInt(localStorage.getItem("msgIdValue") || "1");
-    storedmsgIdValue = storedmsgIdValue + 1;
-    setMsgIdValue(storedmsgIdValue);
-    let str = "" + storedmsgIdValue;
-    let pad = "000100";
-    let ans = pad.substring(0, pad.length - str.length) + str;
-    let value = "L1" + ans;
-    setMsgId(value); */
       getApplicationListData();
       setOpen(false)
     }, []);
@@ -120,7 +119,7 @@ const commonStyles = {
         setOpen(true);
         let data = response.data;
        
-        let sequence = debitType==="RECURRING"?"RCUR":frequency==="ONE OFF"?"OOFF":"";
+        let sequence = debitTypeName==="RECURRING"?"RCUR":debitTypeName==="ONE OFF"?"OOFF":"";
        // localStorage.setItem("msgIdValue", parseInt(msgIdValue));
         msgValue = data.msgIdValue +1;
        setMsgIdValue(msgValue);
@@ -138,7 +137,8 @@ const commonStyles = {
           customerExpiryDate: expiryDate,
           customerDebitAmount: nachAmount,
           customerMaximumAmount: mandateAmount,
-          customerDebitFrequency: sequence ==="OOFF"?"":frequency==="MONTHLY"?"MNTH":frequency==="AS WHEN REQUIRED"?"ADHO":"",
+          customerDebitFrequency: sequence ==="OOFF"?"":frequencyName==="Monthly"?"MNTH"
+          :frequencyName==="As When Required"?"ADHO":frequencyName==="Yearly"?"YEAR":"",
           customerSeqenceType: sequence,
           customerInstructedMemberId: nachIfscCode,
           channel: channel,
@@ -190,7 +190,7 @@ setPayMentType(event.target.value);
         const response = await axios.post("/enach/enachDetails", {
           applicationNum: appNum,
         });
-        if(response.data!==null){
+        if(response.data!==null && Object.keys(response.data).length>=1){
         setApplicantNameList(response.data);
         setMailId(response.data.mailId);
         setMobileNumber(response.data.mobileNum);
@@ -224,6 +224,26 @@ setPayMentType(event.target.value);
         setTenure(response.data.tenure);
         setNachBankType(response.data.bankAccountType);
         setNachBank(response.data.nachBank);
+        let debitTypeValue = response.data.debitType;
+        if(debitTypeValue===null || debitTypeValue==="" || debitTypeValue===undefined){
+          setDebitTypeDisable(false);
+        }else{
+          let newValue = debitTypeValue ==="Fixed Amount"?"RECURRING":"ONE OFF";
+          let code = debitTypeList.filter(a=>a.text===newValue)[0].value;
+          setDebitType(code);
+          setDebitTypeDisable(true);
+        }
+
+        let frequncyValue = response.data.frequency;
+        if(frequncyValue===null || frequncyValue==="" || frequncyValue===undefined){
+          setFrequencyDisable(false);
+        }else{
+          let code = frequencyList.filter(a=>a.text===frequncyValue)[0].value;
+          setFrequency(code);
+          setFrequencyDisable(true);
+        }
+      }else{
+        setContactAdmin(true);
       }
       } catch {
         setContactAdmin(true);
@@ -307,11 +327,13 @@ setPayMentType(event.target.value);
       <Box sx={{ minHeight: "calc(100vh - 110px)", display: "flex", justifyContent: "center" }}>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <img
-            style={{ height: "350px", width: "350px", position: "relative", top: "30%" }}
+            style={{ height: "350px", width: "350px", position: "relative", top: "28%" }}
             src={contactImg}
             alt="Thumb"
           />
+            <InputLabel sx={{  display: "flex",position: "absolute", top: "85%",justifyContent: "center", color: "Red" }}> Failed to Register Enach For this Application</InputLabel>
         </Box>
+       
       </Box>
       :
       <Box>
@@ -397,17 +419,45 @@ setPayMentType(event.target.value);
                       <CustomTextField label={"Mandate Start Date"} value={new Date(mandateStartDate).toLocaleDateString("fr-FR")} disabled={true} variant={"standard"}></CustomTextField>
                     </Grid>
                     <Grid item xs={5.87} sm={5.75} md={4} lg={5.9} xl={3}>
-                      <CustomTextField label={"Mandate End Date"} value={new Date(mandateEndDate).toLocaleDateString("fr-FR")} disabled={true} variant={"standard"}></CustomTextField>
+                      <CustomTextField label={"Mandate End Date"} value={mandateEndDate===""?"":new Date(mandateEndDate).toLocaleDateString("fr-FR")} disabled={true} variant={"standard"}></CustomTextField>
                     </Grid>
                   </Grid>
                   <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                     <Box sx={{ marginLeft: "8px", width: "100%" }}>
-                      <CustomTextField label={"Frequency"} value={frequency} disabled={true} variant={"standard"}></CustomTextField>
+                      <CustomDropDown
+                  disabled={frequencyDisable}
+                  label="Frequency"
+                  id="frequency"
+                  variant="standard"
+                  type="text"
+                  placeholder="Select Frequency"
+                  dropDownValue={frequencyList}
+                  value={frequency}
+                  onChange={(event)=>{
+                    setFrequency(event.target.value);
+                    let name = frequencyList.filter(a=>a.value===event.target.value)[0].text;
+                    setFrequencyName(name);
+                  }}
+                />
                     </Box>
                   </Grid>
                   <Grid item xs={11.5} sm={5.75} md={4} lg={5.85} xl={3}>
                     <Box sx={{ marginLeft: "8px", marginBottom: "8px", width: "100%" }}>
-                      <CustomTextField label={"Debit Type"} value={debitType} disabled={true} variant={"standard"}></CustomTextField>
+                  <CustomDropDown
+                  disabled={debitTypeDisable}
+                  label="Debit Type"
+                  id="debitType"
+                  variant="standard"
+                  type="text"
+                  placeholder="Select Debit Type"
+                  dropDownValue={debitTypeList}
+                  value={debitType}
+                  onChange={(event)=>{
+                    setDebitType(event.target.value);
+                    let name = debitTypeList.filter(a=>a.value===event.target.value)[0].text;
+                    setDebitTypeName(name);
+                  }}
+                />
                     </Box>
                   </Grid>
                 </Grid>
