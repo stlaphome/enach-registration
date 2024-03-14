@@ -63,19 +63,13 @@ function CircularProgress(cProps) {
 const TransitionNotSuccess = (props) => {
     let progress = useMotionValue(100);
     
-    useEffect(() => {
-      setTimeout(() => {
-       props.isTransitionCompleted(true);
-      }, props.duration * 1040);   
-     })
-
+   
     return(
         <div style={{justifyContent: "center", display: "flex"}}>
         <motion.div
           initial={{ x: 0 }}
           animate={{ x: 100 }}
           style={{ x: progress }}
-          transition={{ duration: props.duration }}
         />
         <CircularProgress progress={progress} width={props.width} height={props.height}/>
       </div>
